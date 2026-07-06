@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import PageHeader from "@/components/PageHeader";
 import Reveal from "@/components/Reveal";
 
@@ -9,13 +9,16 @@ export const metadata = {
 
 const galleryImages = [
   "/images/house-dusk.png",
-  "/images/office-interior.png",
-  "/images/couple.png",
   "/images/skyline-woman.png",
+  "/images/couple.png",
   "/images/lifestyle.png",
-  "/images/office.png",
-  "/images/services.png",
+  "/images/skyline-fields.png",
+  "/images/hero-couple.png",
+  "/images/office-interior.png",
+  "/images/vision.png",
   "/images/woman-smile.png",
+  "/images/mission.png",
+  "/images/services.png",
   "/images/woman-profile.png",
 ];
 
