@@ -1,0 +1,180 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --edge: 0px;
+  --font-fraunces: "Fraunces", Georgia, serif;
+  --font-inter: "Inter", system-ui, sans-serif;
+}
+
+html {
+  /* Let lenis handle smooth scrolling, disable native smooth scroll so they don't clash */
+  scroll-behavior: auto;
+}
+
+body {
+  @apply bg-cream text-ink font-body antialiased;
+}
+
+.bracket-frame {
+  position: relative;
+}
+.bracket-frame::before,
+.bracket-frame::after {
+  content: "";
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+}
+.bracket-frame::before {
+  top: -6px;
+  left: -6px;
+  border-top: 3px solid #FE8F01;
+  border-left: 3px solid #FE8F01;
+}
+.bracket-frame::after {
+  bottom: -6px;
+  right: -6px;
+  border-bottom: 3px solid #24B550;
+  border-right: 3px solid #24B550;
+}
+
+.eyebrow {
+  @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em];
+}
+
+.section {
+  @apply py-20 md:py-28;
+}
+
+.container-c {
+  @apply mx-auto w-full max-w-content px-5 sm:px-8;
+}
+
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid #FE8F01;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---- Lively image hover ---- */
+.img-zoom {
+  @apply overflow-hidden;
+}
+
+/* ---- Floating animation ---- */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+/* ---- Slow float for images ---- */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-16px); }
+}
+.img-float img {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+/* ---- Gentle pulse for icons ---- */
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-gentle-pulse {
+  animation: gentle-pulse 3s ease-in-out infinite;
+}
+
+/* ---- Shimmer for CTA banners ---- */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ---- Contact form inputs ---- */
+.input {
+  width: 100%;
+  border: 1px solid rgba(20, 38, 28, 0.15);
+  background: #ffffff;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: #14261c;
+  transition: border-color 0.2s;
+}
+.input:focus {
+  border-color: #fe8f01;
+  outline: none;
+}
+
+
+
+/* ---- Floating orbs ---- */
+.orb {
+  position: absolute;
+
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(56px);
+}
+@keyframes orb-float-a {
+  0%,100% { transform: translate(0,0) scale(1); }
+  30%      { transform: translate(28px,-22px) scale(1.08); }
+  70%      { transform: translate(-18px, 14px) scale(0.94); }
+}
+@keyframes orb-float-b {
+  0%,100% { transform: translate(0,0) scale(1); }
+  40%      { transform: translate(-32px, 24px) scale(1.12); }
+  80%      { transform: translate(20px,-10px) scale(0.92); }
+}
+@keyframes orb-float-c {
+  0%,100% { transform: translate(0,0); }
+  25%     { transform: translate(18px,-28px); }
+  75%     { transform: translate(-14px, 20px); }
+}
+.orb-a { animation: orb-float-a 13s ease-in-out infinite; }
+.orb-b { animation: orb-float-b 17s ease-in-out infinite; }
+.orb-c { animation: orb-float-c 11s ease-in-out infinite; }
+
+/* ---- Animated gradient text ---- */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.text-gradient-animate {
+  background: linear-gradient(90deg, #FE8F01, #24B550, #FE8F01);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* ---- Scroll-driven number pulse ---- */
+@keyframes number-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.number-pop {
+  animation: number-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Reduced motion overrides */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+  .img-zoom:hover img { transform: none; }
+  .orb              { animation: none !important; }
+}
