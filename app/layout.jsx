@@ -1,9 +1,10 @@
-﻿import "./globals.css";
+import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollProgress from "@/components/ScrollProgress";
+import Providers from "@/components/Providers";
 
 export const metadata = {
   title: "Cassmo Homes - Real Estate in Abuja, Nigeria",
@@ -22,13 +23,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <SmoothScroll>
-          <ScrollProgress />
-          <Navbar />
-          <main>{children}</main>
-          <WhatsAppButton />
-          <Footer />
-        </SmoothScroll>
+        <Providers>
+          <SmoothScroll>
+            <ScrollProgress />
+            <Navbar />
+            <main>{children}</main>
+            <WhatsAppButton />
+            <Footer />
+          </SmoothScroll>
+        </Providers>
       </body>
     </html>
   );
