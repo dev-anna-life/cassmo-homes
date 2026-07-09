@@ -12,7 +12,7 @@ function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const errorParam = params.get("error");
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ identifier: "", password: "" });
   const [error, setError] = useState(
     errorParam === "CredentialsSignin"
       ? "Incorrect email or password."
@@ -39,7 +39,7 @@ function LoginForm() {
     setError(null);
 
     const res = await signIn("credentials", {
-      email: form.email,
+      email: form.identifier,   // field name must stay "email" for NextAuth
       password: form.password,
       redirect: false,
     });
@@ -126,14 +126,15 @@ function LoginForm() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                    Email Address
+                    Email or Username
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     required
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="Enter your email"
+                    value={form.identifier}
+                    onChange={(e) => setForm({ ...form, identifier: e.target.value })}
+                    placeholder="Enter your email or @username"
+                    autoComplete="username"
                     className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
                   />
                 </div>

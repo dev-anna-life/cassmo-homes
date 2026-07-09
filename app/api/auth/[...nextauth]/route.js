@@ -8,14 +8,26 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: "Email or Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase().trim() },
+        const identifier = credentials.email.trim().toLowerCase();
+
+        // Accept email OR @username (with or without the @ prefix)
+        const cleanUsername = identifier.startsWith("@")
+          ? identifier.slice(1)
+          : identifier;
+
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: identifier },
+              { username: cleanUsername },
+            ],
+          },
         });
 
         if (!user) return null;

@@ -7,8 +7,10 @@ const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no I, O, 0, 1 (confusing)
 const LENGTH = 6;
 
 function generateCode() {
-  return Array.from({ length: LENGTH }, () =>
-    CHARS.charAt(Math.floor(Math.random() * CHARS.length))
+  // Use current timestamp as additional entropy seed
+  const seed = Date.now();
+  return Array.from({ length: LENGTH }, (_, i) =>
+    CHARS.charAt(Math.floor(((seed * (i + 1) * 9301 + 49297) % 233280) / 233280 * CHARS.length + Math.random() * CHARS.length) % CHARS.length)
   ).join("");
 }
 
@@ -100,7 +102,8 @@ function drawCaptcha(canvas, code) {
 
 export default function VisualCaptcha({ onVerified }) {
   const canvasRef = useRef(null);
-  const [code, setCode] = useState("");
+  // Lazy initializer — generates a fresh code immediately on every mount/page load
+  const [code, setCode] = useState(() => generateCode());
   const [input, setInput] = useState("");
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState(false);
@@ -114,15 +117,11 @@ export default function VisualCaptcha({ onVerified }) {
     onVerified(false);
   }, [onVerified]);
 
-  // Draw when code changes
+  // Draw onto canvas whenever code changes
   useEffect(() => {
-    if (!code) {
-      refresh();
-      return;
-    }
     const canvas = canvasRef.current;
-    if (canvas) drawCaptcha(canvas, code);
-  }, [code, refresh]);
+    if (canvas && code) drawCaptcha(canvas, code);
+  }, [code]);
 
   const handleChange = (e) => {
     const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
