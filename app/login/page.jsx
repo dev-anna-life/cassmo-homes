@@ -51,7 +51,7 @@ function LoginForm() {
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
       {/* Top green bar matching White Rock portal using Cassmo green */}
       <div className="bg-[#0B3D24] text-white flex items-center justify-between px-5 py-3 shadow">
-        <div className="font-serif italic text-xl tracking-wide text-[#FE8F01]">Cassmo Admin</div>
+        <div className="font-serif italic text-xl tracking-wide text-[#FE8F01]">Cassmo Homes</div>
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-12">

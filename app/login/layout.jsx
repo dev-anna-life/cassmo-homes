@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Login — Cassmo Admin",
+  title: "Member Login — Cassmo Homes",
 };
 
 export default function LoginLayout({ children }) {
