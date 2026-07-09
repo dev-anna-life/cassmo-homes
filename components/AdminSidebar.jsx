@@ -33,11 +33,11 @@ export default function AdminSidebar({ isOpen, setIsOpen, session }) {
       id: "members",
       isDropdown: true,
       children: [
-        { name: "Change Member Roles", href: "#" },
-        { name: "Change Member Password", href: "#" },
-        { name: "View All Members", href: "/admin" },
-        { name: "View Registerd Members", href: "#" },
-        { name: "View Unregistered Members", href: "#" },
+        { name: "Change Member Roles", href: "/admin?action=change-role" },
+        { name: "Change Member Password", href: "/admin?action=change-password" },
+        { name: "View All Members", href: "/admin?tab=all" },
+        { name: "View Registered Members", href: "/admin?tab=registered" },
+        { name: "View Unregistered Members", href: "/admin?tab=unregistered" },
       ]
     },
     { name: "Funding", icon: FileText, href: "#", isDropdown: false },
@@ -81,7 +81,7 @@ export default function AdminSidebar({ isOpen, setIsOpen, session }) {
                       <button 
                         onClick={() => toggleMenu(item.id)}
                         className={`w-full flex items-center justify-between px-6 py-3 hover:bg-[#2d3436] transition-colors
-                          ${openMenus[item.id] ? "bg-[#2d3436] text-white border-l-4 border-[#0f9d58]" : "border-l-4 border-transparent"}
+                          ${openMenus[item.id] ? "bg-[#2d3436] text-white border-l-4 border-[#FE8F01]" : "border-l-4 border-transparent"}
                         `}
                       >
                         <div className="flex items-center gap-3">
