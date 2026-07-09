@@ -48,9 +48,9 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
-      {/* Top green bar matching White Rock portal */}
-      <div className="bg-[#0f9d58] text-white flex items-center justify-between px-5 py-3 shadow">
-        <div className="font-serif italic text-xl tracking-wide">Cassmo Admin</div>
+      {/* Top green bar matching White Rock portal using Cassmo green */}
+      <div className="bg-[#0B3D24] text-white flex items-center justify-between px-5 py-3 shadow">
+        <div className="font-serif italic text-xl tracking-wide text-[#FE8F01]">Cassmo Admin</div>
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-12">
@@ -71,7 +71,7 @@ function LoginForm() {
                   router.push(successUrl);
                   router.refresh();
                 }}
-                className="w-full bg-[#0f9d58] text-white py-3.5 rounded font-semibold text-sm hover:bg-[#0b8a4c] transition-colors"
+                className="w-full bg-[#0B3D24] text-white py-3.5 rounded font-semibold text-sm hover:bg-[#072c1a] transition-colors"
               >
                 Proceed To Your Admin Dashboard
               </button>
@@ -85,11 +85,11 @@ function LoginForm() {
               <div className="mb-6 text-center">
                 <Link href="/">
                   <Image
-                    src="/images/logo.png"
+                    src="/images/logo-color.png"
                     alt="Cassmo Homes"
-                    width={140}
-                    height={40}
-                    className="mx-auto h-10 w-auto object-contain"
+                    width={180}
+                    height={60}
+                    className="mx-auto h-12 w-auto object-contain"
                   />
                 </Link>
                 <h2 className="mt-4 text-lg font-bold text-gray-700">Member Login</h2>
@@ -112,7 +112,7 @@ function LoginForm() {
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder="Enter your email"
-                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0f9d58] transition-colors rounded bg-gray-50"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
                   />
                 </div>
 
@@ -125,15 +125,15 @@ function LoginForm() {
                     required
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder="Enter captcha"
-                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0f9d58] transition-colors rounded bg-gray-50"
+                    placeholder="Enter password"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#0f9d58] text-white font-semibold py-3.5 text-sm hover:bg-[#0b8a4c] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed rounded mt-2"
+                  className="w-full bg-[#0B3D24] text-white font-semibold py-3.5 text-sm hover:bg-[#072c1a] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed rounded mt-2"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
