@@ -124,11 +124,33 @@ function MembersSection({ users, loading, action, onRefresh }) {
   const [modalMessage, setModalMessage] = useState("");
   const [modalError, setModalError] = useState("");
   const [newMember, setNewMember] = useState({ name: "", email: "", password: "", phone: "" });
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id, name }
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const toggleExpand = (id) =>
     setExpandedUsers((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const members = users.filter((u) => u.role !== "admin");
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    setDeleteError("");
+    const res = await fetch("/api/admin/users/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: deleteTarget.id }),
+    });
+    const data = await res.json();
+    setDeleteLoading(false);
+    if (res.ok) {
+      setDeleteTarget(null);
+      onRefresh();
+    } else {
+      setDeleteError(data.error || "Failed to delete member.");
+    }
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -240,9 +262,47 @@ function MembersSection({ users, loading, action, onRefresh }) {
   // Default — view all members
   return (
     <div>
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-800">Delete Member?</h3>
+                <p className="text-xs text-gray-500">This action cannot be undone.</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 bg-gray-50 rounded p-3 mb-4">
+              You are about to permanently delete <strong>{deleteTarget.name}</strong> and all their data (wallet, transactions, etc.).
+            </p>
+            {deleteError && (
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-4">{deleteError}</p>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setDeleteTarget(null); setDeleteError(""); }}
+                className="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded font-semibold text-sm hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteLoading}
+                className="flex-1 bg-red-600 text-white py-2.5 rounded font-semibold text-sm hover:bg-red-700 disabled:opacity-60"
+              >
+                {deleteLoading ? "Deleting…" : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <SectionHeader title="All Members" subtitle={`${members.length} registered member(s) in the network.`} />
       <div className="bg-white rounded shadow overflow-x-auto">
-        <table className="w-full text-left text-sm text-gray-600 min-w-[560px]">
+        <table className="w-full text-left text-sm text-gray-600 min-w-[640px]">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="px-5 py-3 font-bold text-gray-700">No</th>
@@ -251,26 +311,32 @@ function MembersSection({ users, loading, action, onRefresh }) {
               <th className="px-5 py-3 font-bold text-gray-700">Referred By</th>
               <th className="px-5 py-3 font-bold text-gray-700">People Referred</th>
               <th className="px-5 py-3 font-bold text-gray-700">Joined</th>
+              <th className="px-5 py-3 font-bold text-gray-700">Action</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading…</td></tr>
+              <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading…</td></tr>
             ) : members.length === 0 ? (
-              <tr><td colSpan={6} className="text-center py-10 text-gray-400 italic">No members yet.</td></tr>
+              <tr><td colSpan={7} className="text-center py-10 text-gray-400 italic">No members yet.</td></tr>
             ) : (
               members.map((u, i) => (
                 <React.Fragment key={u.id}>
                   <tr className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-5 py-3 text-gray-400">{i + 1}</td>
-                    <td className="px-5 py-3 font-medium text-gray-800 flex items-center gap-2">
-                      {u.referredUsers?.length > 0 ? (
-                        <button onClick={() => toggleExpand(u.id)} className="text-[#FE8F01] hover:bg-gray-200 rounded p-0.5">
-                          <ChevronRight className={`w-4 h-4 transition-transform ${expandedUsers[u.id] ? "rotate-90" : ""}`} />
-                        </button>
-                      ) : <span className="w-6" />}
-                      {u.name}
-                      {u.role === "admin" && <span className="ml-1 text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold uppercase">Admin</span>}
+                    <td className="px-5 py-3 font-medium text-gray-800">
+                      <div className="flex items-center gap-2">
+                        {u.referredUsers?.length > 0 ? (
+                          <button onClick={() => toggleExpand(u.id)} className="text-[#FE8F01] hover:bg-gray-200 rounded p-0.5">
+                            <ChevronRight className={`w-4 h-4 transition-transform ${expandedUsers[u.id] ? "rotate-90" : ""}`} />
+                          </button>
+                        ) : <span className="w-6" />}
+                        <div>
+                          <div>{u.name}</div>
+                          {u.username && <div className="text-xs text-gray-400 font-mono">@{u.username}</div>}
+                        </div>
+                        {u.role === "admin" && <span className="ml-1 text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold uppercase">Admin</span>}
+                      </div>
                     </td>
                     <td className="px-5 py-3">{u.phone || ""}</td>
                     <td className="px-5 py-3">{u.referredBy?.name || <span className="text-gray-400 italic text-xs">Direct</span>}</td>
@@ -280,10 +346,20 @@ function MembersSection({ users, loading, action, onRefresh }) {
                         : <span className="text-gray-400 text-xs">0 Referrals</span>}
                     </td>
                     <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(u.createdAt)}</td>
+                    <td className="px-5 py-3">
+                      <button
+                        onClick={() => setDeleteTarget({ id: u.id, name: u.name })}
+                        title="Delete member"
+                        className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 border border-red-200 px-2.5 py-1.5 rounded transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                   {expandedUsers[u.id] && u.referredUsers?.length > 0 && (
                     <tr className="bg-gray-50">
-                      <td colSpan={6} className="px-10 py-4 border-b border-gray-100">
+                      <td colSpan={7} className="px-10 py-4 border-b border-gray-100">
                         <div className="border-l-4 border-[#FE8F01] pl-4">
                           <p className="text-xs font-bold uppercase text-gray-500 mb-2">🔗 Referred by {u.name}:</p>
                           <div className="flex flex-wrap gap-2">
