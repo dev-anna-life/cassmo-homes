@@ -51,12 +51,13 @@ function EmptyState({ icon: Icon, message }) {
 }
 
 /* ══════════════════════════════════ SECTION: DASHBOARD ═══════════════════ */
-function DashboardSection({ users, dashData, loadingDash, onRefresh }) {
+function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) {
   const members = users.filter((u) => u.role === "user");
   const counts = dashData?.counts || {};
   const [deleteTarget, setDeleteTarget] = useState(null); // { id, name }
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -75,6 +76,14 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh }) {
     } else {
       setDeleteError(data.error || "Failed to delete member.");
     }
+  };
+
+  const copyInvite = () => {
+    if (!session?.user?.referralCode) return;
+    const url = `${window.location.origin}/signup?ref=${session.user.referralCode}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const cards = [
@@ -126,6 +135,33 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh }) {
       )}
 
       <SectionHeader title="Dashboard" subtitle="Overview of all activity on Cassmo Homes." />
+
+      {/* Admin Referral Link Banner */}
+      {session?.user?.referralCode && (
+        <div className="bg-white rounded shadow p-5 border-l-4 border-[#0B3D24] mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h3 className="font-bold text-gray-800 text-sm">Your Admin Referral Details</h3>
+            <p className="text-xs text-gray-500 mt-1">
+              Copy your direct referral link below to register new members under your network.
+            </p>
+            <div className="mt-2 text-xs font-mono text-gray-600 bg-gray-50 border border-gray-200 rounded px-3 py-2 select-all break-all max-w-xl">
+              {`${typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app"}/signup?ref=${session.user.referralCode}`}
+            </div>
+            <div className="mt-1 text-xs text-gray-400">
+              Referral Code: <span className="font-bold text-gray-600 font-mono tracking-wider">{session.user.referralCode}</span>
+            </div>
+          </div>
+          <button
+            onClick={copyInvite}
+            className={`sm:self-center px-5 py-2.5 rounded font-semibold text-xs transition-colors self-start whitespace-nowrap ${
+              copied ? "bg-green-600 text-white" : "bg-[#0B3D24] hover:bg-[#072c1a] text-white"
+            }`}
+          >
+            {copied ? "✓ Copied Link" : "Copy Invite Link"}
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
         {cards.map((c) => (
           <div key={c.label} className="flex bg-white shadow overflow-hidden rounded">
@@ -919,11 +955,21 @@ function PropertiesSection({ data, onRefresh }) {
 }
 
 /* ══════════════════════════════════ SECTION: EXTRAS ══════════════════════ */
-function ExtrasSection({ data }) {
+function ExtrasSection({ data, session }) {
+  const [copied, setCopied] = useState(false);
+
+  const copyInvite = () => {
+    if (!session?.user?.referralCode) return;
+    const url = `${window.location.origin}/signup?ref=${session.user.referralCode}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div>
       <SectionHeader title="Extras" subtitle="Company materials and network settings." />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
         <div className="bg-white rounded shadow p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-[#0B3D24]/10 rounded-lg flex items-center justify-center">
@@ -961,6 +1007,47 @@ function ExtrasSection({ data }) {
           </div>
         </div>
       </div>
+
+      {session?.user?.referralCode && (
+        <div className="bg-white rounded shadow p-6 max-w-xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-[#0B3D24]/10 rounded-lg flex items-center justify-center">
+              <Users className="w-5 h-5 text-[#0B3D24]" />
+            </div>
+            <h3 className="font-bold text-gray-800">Admin Invitation Details</h3>
+          </div>
+          <p className="text-sm text-gray-500 mb-4">
+            Use your referral code or direct link to register members under the Cassmo Homes network.
+          </p>
+          <div className="space-y-4">
+            <div>
+              <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Referral Code</span>
+              <span className="font-mono font-bold text-lg text-gray-800 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded select-all">
+                {session.user.referralCode}
+              </span>
+            </div>
+            <div>
+              <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Referral Link</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={`${window.location.origin}/signup?ref=${session.user.referralCode}`}
+                  className="flex-1 bg-gray-50 border border-gray-200 px-3 py-2 text-xs font-mono rounded text-gray-600 focus:outline-none"
+                />
+                <button
+                  onClick={copyInvite}
+                  className={`px-4 py-2 rounded text-xs font-semibold transition-colors ${
+                    copied ? "bg-green-600 text-white" : "bg-[#0B3D24] hover:bg-[#072c1a] text-white"
+                  }`}
+                >
+                  {copied ? "Copied" : "Copy"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1018,7 +1105,7 @@ function AdminDashboardContent() {
 
   const renderSection = () => {
     switch (section) {
-      case "dashboard":   return <DashboardSection users={users} dashData={dashData} loadingDash={loadingDash} onRefresh={fetchAll} />;
+      case "dashboard":   return <DashboardSection users={users} dashData={dashData} loadingDash={loadingDash} onRefresh={fetchAll} session={session} />;
       case "members":     return <MembersSection users={users} loading={loadingUsers} action={action} onRefresh={fetchAll} />;
       case "funding":     return <FundingSection data={dashData} onRefresh={fetchAll} />;
       case "commissions": return <CommissionsSection data={dashData} />;
@@ -1026,8 +1113,8 @@ function AdminDashboardContent() {
       case "sales":       return <PropertySalesSection data={dashData} onRefresh={fetchAll} />;
       case "withdrawals": return <WithdrawalSection data={dashData} onRefresh={fetchAll} />;
       case "properties":  return <PropertiesSection data={dashData} onRefresh={fetchAll} />;
-      case "extras":      return <ExtrasSection data={dashData} />;
-      default:            return <DashboardSection users={users} dashData={dashData} loadingDash={loadingDash} onRefresh={fetchAll} />;
+      case "extras":      return <ExtrasSection data={dashData} session={session} />;
+      default:            return <DashboardSection users={users} dashData={dashData} loadingDash={loadingDash} onRefresh={fetchAll} session={session} />;
     }
   };
 
