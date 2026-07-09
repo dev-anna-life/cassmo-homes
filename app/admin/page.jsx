@@ -313,22 +313,21 @@ function AdminDashboardContent() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-600 min-w-[700px]">
+            <table className="w-full text-left text-sm text-gray-600 min-w-[600px]">
               <thead className="border-b border-gray-200 bg-gray-50">
                 <tr>
                   <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">No</th>
                   <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Username</th>
                   <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Phone Number</th>
-                  <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Referral Code</th>
                   <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Referred By</th>
-                  <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Referrals</th>
+                  <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">People Referred</th>
                   <th className="px-5 py-4 font-bold text-gray-700">Joined</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-gray-400">
+                    <td colSpan={6} className="text-center py-12 text-gray-400">
                       <div className="flex items-center justify-center gap-2">
                         <div className="h-5 w-5 border-2 border-[#0B3D24] border-t-transparent rounded-full animate-spin" />
                         Loading members...
@@ -337,7 +336,7 @@ function AdminDashboardContent() {
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-gray-400 italic">
+                    <td colSpan={6} className="text-center py-12 text-gray-400 italic">
                       No members matching this filter.
                     </td>
                   </tr>
@@ -367,11 +366,6 @@ function AdminDashboardContent() {
                         </td>
                         <td className="px-5 py-4 border-r border-gray-100">{user.phone || "—"}</td>
                         <td className="px-5 py-4 border-r border-gray-100">
-                          <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs tracking-wider text-gray-700">
-                            {user.referralCode}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4 border-r border-gray-100">
                           {user.referredBy ? (
                             <span className="text-gray-800 font-medium">{user.referredBy.name}</span>
                           ) : (
@@ -397,7 +391,7 @@ function AdminDashboardContent() {
                       {/* Expandable Downline Chain Row */}
                       {expandedUsers[user.id] && user.referredUsers?.length > 0 && (
                         <tr className="bg-gray-50/50">
-                          <td colSpan={7} className="px-10 py-4 border-b border-gray-150">
+                          <td colSpan={6} className="px-10 py-4 border-b border-gray-150">
                             <div className="border-l-4 border-[#FE8F01] pl-4">
                               <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
                                 🔗 Referred by {user.name} (Direct Downline):
