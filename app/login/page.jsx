@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,8 +11,6 @@ function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const errorParam = params.get("error");
-  const callbackUrl = params.get("callbackUrl") || "/admin";
-
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState(
     errorParam === "CredentialsSignin"
@@ -23,7 +21,7 @@ function LoginForm() {
   );
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [successUrl, setSuccessUrl] = useState("/admin");
+  const [successUrl, setSuccessUrl] = useState("/dashboard");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +39,10 @@ function LoginForm() {
     if (res?.error) {
       setError("Incorrect email or password. Please try again.");
     } else {
-      setSuccessUrl(callbackUrl);
+      // Read the session to determine role-based redirect
+      const session = await getSession();
+      const redirectTo = session?.user?.role === "admin" ? "/admin" : "/dashboard";
+      setSuccessUrl(redirectTo);
       setSuccess(true);
     }
   };
@@ -73,7 +74,7 @@ function LoginForm() {
                 }}
                 className="w-full bg-[#0B3D24] text-white py-3.5 rounded font-semibold text-sm hover:bg-[#072c1a] transition-colors"
               >
-                Proceed To Your Admin Dashboard
+                {successUrl === "/admin" ? "Proceed To Admin Dashboard" : "Proceed To Your Dashboard"}
               </button>
             </div>
           )}

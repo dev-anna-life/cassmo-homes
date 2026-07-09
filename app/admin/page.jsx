@@ -48,13 +48,16 @@ function AdminDashboardContent() {
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/login");
-  }, [status, router]);
+    if (status === "authenticated" && session?.user?.role !== "admin") {
+      router.replace("/dashboard");
+    }
+  }, [status, session, router]);
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && session?.user?.role === "admin") {
       fetchUsers();
     }
-  }, [status]);
+  }, [status, session]);
 
   if (status === "loading" || !session) {
     return (
@@ -62,6 +65,10 @@ function AdminDashboardContent() {
         <div className="h-8 w-8 border-4 border-[#0B3D24] border-t-transparent rounded-full animate-spin" />
       </div>
     );
+  }
+
+  if (session?.user?.role !== "admin") {
+    return null; // Will be redirected
   }
 
   // Handle Form Submissions for Actions
