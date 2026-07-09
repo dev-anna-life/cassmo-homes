@@ -17,6 +17,9 @@ function SignupForm() {
     password: "",
     phone: "",
     refCode: refFromUrl, // Pre-fill if link has code, but user can type it too
+    bankName: "",
+    accountNumber: "",
+    accountName: "",
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -43,6 +46,9 @@ function SignupForm() {
           password: form.password,
           phone: form.phone,
           refCode: form.refCode.trim().toUpperCase(),
+          bankName: form.bankName,
+          accountNumber: form.accountNumber,
+          accountName: form.accountName,
         }),
       });
 
@@ -185,6 +191,51 @@ function SignupForm() {
                     placeholder="Min. 8 characters"
                     className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
                   />
+                </div>
+
+                {/* Banking details section */}
+                <div className="pt-4 border-t border-gray-100 space-y-4">
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    Bank Payout Details (Optional)
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                      Bank Name
+                    </label>
+                    <input
+                      type="text"
+                      value={form.bankName}
+                      onChange={(e) => setForm({ ...form, bankName: e.target.value })}
+                      placeholder="e.g. Zenith Bank, GTBank"
+                      className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                      Account Number
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={10}
+                      pattern="[0-9]*"
+                      value={form.accountNumber}
+                      onChange={(e) => setForm({ ...form, accountNumber: e.target.value.replace(/\D/g, "") })}
+                      placeholder="10 digit account number"
+                      className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                      Account Name
+                    </label>
+                    <input
+                      type="text"
+                      value={form.accountName}
+                      onChange={(e) => setForm({ ...form, accountName: e.target.value })}
+                      placeholder="Name registered on bank account"
+                      className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
+                    />
+                  </div>
                 </div>
 
                 <button

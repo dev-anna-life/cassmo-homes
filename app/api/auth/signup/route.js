@@ -11,7 +11,7 @@ function generateCode(length = 8) {
 
 export async function POST(request) {
   try {
-    const { name, email, password, phone, refCode } = await request.json();
+    const { name, email, password, phone, refCode, bankName, accountNumber, accountName } = await request.json();
 
     // Validate required fields
     if (!name || !email || !password) {
@@ -71,6 +71,9 @@ export async function POST(request) {
         referralCode: newRefCode,
         referredById: referrer.id,
         role: "user",
+        bankName: bankName?.trim() || null,
+        accountNumber: accountNumber?.trim() || null,
+        accountName: accountName?.trim() || null,
       },
     });
 

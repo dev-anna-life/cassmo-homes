@@ -47,7 +47,7 @@ export default function DashboardPage() {
     if (navigator.share) {
       navigator.share({
         title: "Join Cassmo Homes",
-        text: `I'd like to invite you to join Cassmo Homes real estate network. Use my referral link to sign up!`,
+        text: `I'd like to invite you to join Cassmo Homes real estate network. Use my referral link to sign up! (Referred by: ${session.user.name})`,
         url: referralLink,
       });
     } else {
