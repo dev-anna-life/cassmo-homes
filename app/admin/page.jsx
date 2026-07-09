@@ -101,7 +101,7 @@ function DashboardSection({ users, dashData, loadingDash }) {
                 <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="px-5 py-3 text-gray-400">{i + 1}</td>
                   <td className="px-5 py-3 font-medium text-gray-800">{u.name}</td>
-                  <td className="px-5 py-3">{u.phone || "—"}</td>
+                  <td className="px-5 py-3">{u.phone || ""}</td>
                   <td className="px-5 py-3">{u.referredBy?.name || <span className="text-gray-400 italic text-xs">Direct</span>}</td>
                   <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(u.createdAt)}</td>
                 </tr>
@@ -272,7 +272,7 @@ function MembersSection({ users, loading, action, onRefresh }) {
                       {u.name}
                       {u.role === "admin" && <span className="ml-1 text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold uppercase">Admin</span>}
                     </td>
-                    <td className="px-5 py-3">{u.phone || "—"}</td>
+                    <td className="px-5 py-3">{u.phone || ""}</td>
                     <td className="px-5 py-3">{u.referredBy?.name || <span className="text-gray-400 italic text-xs">Direct</span>}</td>
                     <td className="px-5 py-3">
                       {u.referredUsers?.length > 0
@@ -352,7 +352,7 @@ function FundingSection({ data, onRefresh }) {
                     <div className="text-xs text-gray-400">{r.user.email}</div>
                   </td>
                   <td className="px-5 py-3 font-bold text-gray-800">{fmt(r.amount)}</td>
-                  <td className="px-5 py-3 font-mono text-xs">{r.reference || "—"}</td>
+                  <td className="px-5 py-3 font-mono text-xs">{r.reference || ""}</td>
                   <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(r.createdAt)}</td>
                   <td className="px-5 py-3"><Badge status={r.status} /></td>
                   <td className="px-5 py-3">
@@ -405,9 +405,9 @@ function CommissionsSection({ data }) {
             <tbody>
               {sales.map((s) => (
                 <tr key={s.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="px-5 py-3 font-medium text-gray-800">{s.agent?.name || "—"}</td>
+                  <td className="px-5 py-3 font-medium text-gray-800">{s.agent?.name || ""}</td>
                   <td className="px-5 py-3">{s.buyerName}</td>
-                  <td className="px-5 py-3">{s.property?.title || "—"}</td>
+                  <td className="px-5 py-3">{s.property?.title || ""}</td>
                   <td className="px-5 py-3">{fmt(s.price)}</td>
                   <td className="px-5 py-3 font-bold text-[#0B3D24]">{fmt(s.commissionEarned)}</td>
                   <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(s.createdAt)}</td>
@@ -445,9 +445,9 @@ function BankDetailsSection({ data }) {
               {bankDetails.map((u) => (
                 <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="px-5 py-3 font-medium text-gray-800">{u.name}</td>
-                  <td className="px-5 py-3">{u.bankName || "—"}</td>
-                  <td className="px-5 py-3 font-mono">{u.accountNumber || "—"}</td>
-                  <td className="px-5 py-3">{u.accountName || "—"}</td>
+                  <td className="px-5 py-3">{u.bankName || ""}</td>
+                  <td className="px-5 py-3 font-mono">{u.accountNumber || ""}</td>
+                  <td className="px-5 py-3">{u.accountName || ""}</td>
                 </tr>
               ))}
             </tbody>
@@ -553,8 +553,8 @@ function PropertySalesSection({ data, onRefresh }) {
                 {sales.map((s) => (
                   <tr key={s.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-5 py-3 font-medium text-gray-800">{s.buyerName}</td>
-                    <td className="px-5 py-3">{s.property?.title || "—"}</td>
-                    <td className="px-5 py-3">{s.agent?.name || "—"}</td>
+                    <td className="px-5 py-3">{s.property?.title || ""}</td>
+                    <td className="px-5 py-3">{s.agent?.name || ""}</td>
                     <td className="px-5 py-3">{fmt(s.price)}</td>
                     <td className="px-5 py-3 font-bold text-[#0B3D24]">{fmt(s.commissionEarned)}</td>
                     <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(s.createdAt)}</td>

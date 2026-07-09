@@ -42,7 +42,7 @@ export default function ContactForm() {
     const body = [
       `*Name:* ${form.name}`,
       `*Email:* ${form.email}`,
-      `*Phone:* ${form.phone || "—"}`,
+      `*Phone:* ${form.phone || ""}`,
       `*Interest:* ${form.interest}`,
       `*Message:* ${form.message}`,
     ].join("%0A");
