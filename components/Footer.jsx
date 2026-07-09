@@ -56,9 +56,9 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-cream/10">
-        <div className="container-c flex flex-col items-center justify-between gap-3 py-5 text-xs text-cream/50 sm:flex-row">
+        <div className="container-c flex flex-col items-center justify-between gap-3 py-5 text-xs text-cream/50 sm:flex-row text-center sm:text-left">
           <p>&copy; {new Date().getFullYear()} Cassmo Homes. All rights reserved.</p>
-          <p>Sales &amp; Lease of Lands - Property Management - Design &amp; Construction</p>
+          <p className="sm:text-right">Sales &amp; Lease of Lands - Property Management - Design &amp; Construction</p>
         </div>
       </div>
     </footer>

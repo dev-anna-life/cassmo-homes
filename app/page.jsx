@@ -23,7 +23,7 @@ export default function Home() {
         </div>
 
         <div className="container-c grid items-center gap-10 py-16 md:grid-cols-[1.05fr_0.95fr] md:py-24 relative z-10">
-          <Reveal type="up" duration={0.8}>
+          <Reveal type="left" duration={0.8}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
               Real Estate - Abuja, Nigeria
             </p>
@@ -54,7 +54,7 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <Reveal type="up" delay={150} duration={0.9} className="relative">
+          <Reveal type="right" delay={150} duration={0.9} className="relative">
             <div className="bracket-frame">
               <ParallaxImage speed={0.12} className="relative aspect-[4/5] w-full sm:aspect-[3/4]">
                 <Image
@@ -72,11 +72,15 @@ export default function Home() {
 
         {/* ── Stats bar ── */}
         <div className="border-t border-cream/10 relative z-10">
-          <div className="container-c grid grid-cols-2 divide-x divide-cream/10 md:grid-cols-4">
-            {stats.map((s) => (
+          <div className="container-c grid grid-cols-2 md:grid-cols-4">
+            {stats.map((s, idx) => (
               <div
                 key={s.label}
-                className="px-4 py-6 text-center md:py-7 transition-colors hover:bg-cream/5"
+                className={`px-4 py-6 text-center md:py-7 transition-colors hover:bg-cream/5 border-cream/10
+                  ${idx % 2 === 0 ? "border-r" : ""}
+                  ${idx >= 2 ? "border-t" : ""}
+                  md:border-t-0 md:border-r md:last:border-r-0
+                `}
               >
                 <div className="font-display text-3xl font-semibold text-brand-green">
                   <CountUp value={s.value} />
@@ -93,7 +97,7 @@ export default function Home() {
       {/* ──────────── POSITIONING ──────────── */}
       <section className="section">
         <div className="container-c grid gap-12 md:grid-cols-[0.85fr_1.15fr] md:items-center">
-          <Reveal type="up" duration={0.8}>
+          <Reveal type="left" duration={0.8}>
             <div className="bracket-frame">
               <ParallaxImage speed={0.1} className="relative aspect-[3/4] w-full overflow-hidden">
                 <Image
@@ -106,7 +110,7 @@ export default function Home() {
               </ParallaxImage>
             </div>
           </Reveal>
-          <Reveal delay={150} type="up" duration={0.8}>
+          <Reveal delay={150} type="right" duration={0.8}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent-dark">
               Who we are
             </p>
@@ -147,7 +151,12 @@ export default function Home() {
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {offerings.map((o, i) => (
-              <Reveal key={o.title} delay={i * 100} type="up" duration={0.7}>
+              <Reveal
+                key={o.title}
+                delay={i * 100}
+                type={i === 0 ? "left" : i === 1 ? "up" : "right"}
+                duration={0.8}
+              >
                 <HoverCard>
                   <article className="group flex h-full flex-col overflow-hidden border border-ink/10 bg-cream">
                     <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -195,7 +204,12 @@ export default function Home() {
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {services.map((s, i) => (
-              <Reveal key={s.slug} delay={i * 100} type="up" duration={0.7}>
+              <Reveal
+                key={s.slug}
+                delay={i * 100}
+                type={i === 0 ? "left" : i === 1 ? "up" : "right"}
+                duration={0.8}
+              >
                 <HoverCard>
                   <article className="group flex h-full flex-col border border-ink/10 bg-white p-7 transition-colors hover:border-accent">
                     <span className="font-display text-sm font-semibold text-accent-dark transition-colors group-hover:text-brand-green">
@@ -230,7 +244,7 @@ export default function Home() {
         <div className="orb orb-a h-60 w-60 bg-accent/10 bottom-0 left-10" />
 
         <div className="container-c grid gap-12 md:grid-cols-2 md:items-center relative z-10">
-          <Reveal type="up" duration={0.8}>
+          <Reveal type="left" duration={0.8}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
               Why invest with us
             </p>
@@ -252,7 +266,7 @@ export default function Home() {
               ))}
             </div>
           </Reveal>
-          <Reveal delay={150} type="up" duration={0.8} className="md:order-last">
+          <Reveal delay={150} type="right" duration={0.8} className="md:order-last">
             <div className="bracket-frame">
               <ParallaxImage speed={0.15} className="relative aspect-[4/5] w-full overflow-hidden">
                 <Image
@@ -286,9 +300,8 @@ export default function Home() {
       {/* ──────────── CTA ──────────── */}
       <section className="pb-20 md:pb-28">
         <div className="container-c">
-          <Reveal type="up" duration={0.8}>
             <div className="relative grid overflow-hidden bg-brand-green md:grid-cols-2">
-              <div className="relative min-h-[240px] md:min-h-full overflow-hidden group cursor-pointer active:scale-[0.96] transition-transform duration-300">
+              <Reveal type="left" duration={0.8} className="relative min-h-[240px] md:min-h-full overflow-hidden group cursor-pointer active:scale-[0.96] transition-transform duration-300">
                 <Image
                   src="/images/woman-smile.png"
                   alt="A Cassmo Homes client, at ease"
@@ -296,8 +309,8 @@ export default function Home() {
                   className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
-              </div>
-              <div className="px-8 py-12 text-forest-deep sm:px-12">
+              </Reveal>
+              <Reveal type="right" duration={0.8} className="px-8 py-12 text-forest-deep sm:px-12">
                 <h2 className="font-display text-3xl font-semibold leading-tight sm:text-4xl">
                   Ready to buy land or build a home?
                 </h2>
@@ -319,9 +332,8 @@ export default function Home() {
                     +234 902 573 7611
                   </a>
                 </div>
-              </div>
+              </Reveal>
             </div>
-          </Reveal>
         </div>
       </section>
     </>

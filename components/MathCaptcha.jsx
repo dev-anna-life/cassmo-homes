@@ -163,22 +163,24 @@ export default function VisualCaptcha({ onVerified }) {
       </div>
 
       {/* Canvas */}
-      <div className="flex items-center gap-3">
-        <canvas
-          ref={canvasRef}
-          width={200}
-          height={56}
-          className={`rounded border select-none flex-shrink-0 transition-all ${
-            verified
-              ? "border-green-400 opacity-60"
-              : error
-              ? "border-red-400 animate-shake"
-              : "border-gray-300"
-          }`}
-          style={{ imageRendering: "pixelated" }}
-        />
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex justify-center flex-shrink-0">
+          <canvas
+            ref={canvasRef}
+            width={200}
+            height={56}
+            className={`rounded border select-none transition-all ${
+              verified
+                ? "border-green-400 opacity-60"
+                : error
+                ? "border-red-400 animate-shake"
+                : "border-gray-300"
+            }`}
+            style={{ imageRendering: "pixelated" }}
+          />
+        </div>
 
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <input
             type="text"
             maxLength={LENGTH}

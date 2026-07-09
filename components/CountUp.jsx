@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 
@@ -32,7 +32,7 @@ export default function CountUp({ value }) {
         started.current = true;
         io.disconnect();
 
-        const duration = 1800;
+        const duration = target < 20 ? 800 : 1800;
         const startTime = performance.now();
 
         const tick = (now) => {
@@ -47,7 +47,7 @@ export default function CountUp({ value }) {
 
         requestAnimationFrame(tick);
       },
-      { threshold: 0.6 }
+      { threshold: 0.15 }
     );
     io.observe(el);
     return () => io.disconnect();
