@@ -22,6 +22,7 @@ function AdminDashboardContent() {
   const [modalLoading, setModalLoading] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalError, setModalError] = useState("");
+  const [newMember, setNewMember] = useState({ name: "", email: "", password: "", phone: "" });
 
   // Offline prospects mockup
   const [prospects, setProspects] = useState([]);
@@ -101,6 +102,37 @@ function AdminDashboardContent() {
     } catch (err) {
       setModalLoading(false);
       setModalError("An unexpected error occurred.");
+    }
+  };
+
+  const handleCreateMember = async (e) => {
+    e.preventDefault();
+    setModalLoading(true);
+    setModalError("");
+    setModalMessage("");
+
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newMember,
+          refCode: session?.user?.referralCode
+        })
+      });
+      const d = await res.json();
+      setModalLoading(false);
+
+      if (d.error) {
+        setModalError(d.error);
+      } else {
+        setModalMessage("Member registered successfully!");
+        fetchUsers();
+        setNewMember({ name: "", email: "", password: "", phone: "" });
+      }
+    } catch (err) {
+      setModalLoading(false);
+      setModalError("Something went wrong. Please try again.");
     }
   };
 
@@ -274,20 +306,22 @@ function AdminDashboardContent() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-600 min-w-[500px]">
+            <table className="w-full text-left text-sm text-gray-600 min-w-[700px]">
               <thead className="border-b border-gray-200 bg-gray-50">
                 <tr>
                   <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">No</th>
                   <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Username</th>
                   <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Phone Number</th>
                   <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Referral Code</th>
+                  <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Referred By</th>
+                  <th className="px-5 py-4 font-bold text-gray-700 border-r border-gray-100">Referrals</th>
                   <th className="px-5 py-4 font-bold text-gray-700">Joined</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-gray-400">
+                    <td colSpan={7} className="text-center py-12 text-gray-400">
                       <div className="flex items-center justify-center gap-2">
                         <div className="h-5 w-5 border-2 border-[#0B3D24] border-t-transparent rounded-full animate-spin" />
                         Loading members...
@@ -296,34 +330,87 @@ function AdminDashboardContent() {
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-gray-400 italic">
+                    <td colSpan={7} className="text-center py-12 text-gray-400 italic">
                       No members matching this filter.
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((user, idx) => (
-                    <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="px-5 py-4 border-r border-gray-100 text-gray-500">{idx + 1}</td>
-                      <td className="px-5 py-4 border-r border-gray-100 font-medium text-gray-800">
-                        {user.name}
-                        {user.role === "admin" && (
-                          <span className="ml-2 text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold uppercase">
-                            Admin
+                    <React.Fragment key={user.id}>
+                      {/* Main User Row */}
+                      <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="px-5 py-4 border-r border-gray-100 text-gray-500">{idx + 1}</td>
+                        <td className="px-5 py-4 border-r border-gray-100 font-medium text-gray-800 flex items-center gap-2">
+                          {user.referredUsers?.length > 0 ? (
+                            <button 
+                              onClick={() => toggleExpand(user.id)}
+                              className="p-1 hover:bg-gray-200 rounded transition-colors text-[#FE8F01]"
+                            >
+                              <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${expandedUsers[user.id] ? "rotate-90" : ""}`} />
+                            </button>
+                          ) : (
+                            <span className="w-6 h-6 inline-block" />
+                          )}
+                          {user.name}
+                          {user.role === "admin" && (
+                            <span className="ml-2 text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold uppercase">
+                              Admin
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-5 py-4 border-r border-gray-100">{user.phone || "—"}</td>
+                        <td className="px-5 py-4 border-r border-gray-100">
+                          <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs tracking-wider text-gray-700">
+                            {user.referralCode}
                           </span>
-                        )}
-                      </td>
-                      <td className="px-5 py-4 border-r border-gray-100">{user.phone || "—"}</td>
-                      <td className="px-5 py-4 border-r border-gray-100">
-                        <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs tracking-wider text-gray-700">
-                          {user.referralCode}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4 text-gray-400 text-xs">
-                        {new Date(user.createdAt).toLocaleDateString("en-GB", {
-                          day: "2-digit", month: "short", year: "numeric"
-                        })}
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="px-5 py-4 border-r border-gray-100">
+                          {user.referredBy ? (
+                            <span className="text-gray-800 font-medium">{user.referredBy.name}</span>
+                          ) : (
+                            <span className="text-gray-400 italic text-xs">Direct (None)</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-4 border-r border-gray-100">
+                          {user.referredUsers?.length > 0 ? (
+                            <span className="bg-[#0B3D24]/10 text-[#0B3D24] text-xs font-bold px-2 py-0.5 rounded-full">
+                              {user.referredUsers.length} User(s)
+                            </span>
+                          ) : (
+                            <span className="text-gray-400 text-xs italic">0 Referrals</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-4 text-gray-400 text-xs">
+                          {new Date(user.createdAt).toLocaleDateString("en-GB", {
+                            day: "2-digit", month: "short", year: "numeric"
+                          })}
+                        </td>
+                      </tr>
+
+                      {/* Expandable Downline Chain Row */}
+                      {expandedUsers[user.id] && user.referredUsers?.length > 0 && (
+                        <tr className="bg-gray-50/50">
+                          <td colSpan={7} className="px-10 py-4 border-b border-gray-150">
+                            <div className="border-l-4 border-[#FE8F01] pl-4">
+                              <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                                🔗 Referred by {user.name} (Direct Downline):
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {user.referredUsers.map((referred) => (
+                                  <div 
+                                    key={referred.id}
+                                    className="bg-white border border-gray-200 shadow-sm px-4 py-2 rounded flex flex-col"
+                                  >
+                                    <span className="font-semibold text-sm text-gray-800">{referred.name}</span>
+                                    <span className="text-xs text-gray-400">{referred.email}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   ))
                 )}
               </tbody>
@@ -333,18 +420,18 @@ function AdminDashboardContent() {
       )}
 
       {/* Dynamic Action Modals */}
-      {(currentAction === "change-role" || currentAction === "change-password") && (
+      {(currentAction === "change-role" || currentAction === "change-password" || currentAction === "add-member") && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
             {/* Modal Header */}
             <div className="bg-[#0B3D24] text-white px-6 py-4 flex items-center justify-between">
               <h3 className="font-bold flex items-center gap-2">
-                {currentAction === "change-role" ? (
-                  <ShieldAlert className="w-5 h-5 text-[#FE8F01]" />
-                ) : (
-                  <Key className="w-5 h-5 text-[#FE8F01]" />
-                )}
-                {currentAction === "change-role" ? "Change Member Role" : "Change Member Password"}
+                {currentAction === "change-role" && <ShieldAlert className="w-5 h-5 text-[#FE8F01]" />}
+                {currentAction === "change-password" && <Key className="w-5 h-5 text-[#FE8F01]" />}
+                {currentAction === "add-member" && <Users className="w-5 h-5 text-[#FE8F01]" />}
+                {currentAction === "change-role" && "Change Member Role"}
+                {currentAction === "change-password" && "Change Member Password"}
+                {currentAction === "add-member" && "Register New Member"}
               </h3>
               <button 
                 onClick={() => router.push("/admin")}
@@ -354,80 +441,157 @@ function AdminDashboardContent() {
               </button>
             </div>
 
-            {/* Modal Form */}
-            <form onSubmit={handleUpdate} className="p-6 space-y-4">
-              {modalError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
-                  {modalError}
-                </div>
-              )}
-              {modalMessage && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded text-sm">
-                  {modalMessage}
-                </div>
-              )}
+            {currentAction === "add-member" ? (
+              /* Modal Form: Add Member */
+              <form onSubmit={handleCreateMember} className="p-6 space-y-4">
+                {modalError && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+                    {modalError}
+                  </div>
+                )}
+                {modalMessage && (
+                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded text-sm">
+                    {modalMessage}
+                  </div>
+                )}
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Select Member</label>
-                <select
-                  required
-                  value={selectedUser}
-                  onChange={e => setSelectedUser(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
-                >
-                  <option value="">-- Select Member --</option>
-                  {users.map(u => (
-                    <option key={u.id} value={u.id}>
-                      {u.name} ({u.role})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {currentAction === "change-role" ? (
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Select Role</label>
-                  <select
-                    required
-                    value={newRole}
-                    onChange={e => setNewRole(e.target.value)}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
-                  >
-                    <option value="user">User (Standard Member)</option>
-                    <option value="admin">Admin (Full Dashboard Access)</option>
-                  </select>
-                </div>
-              ) : (
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Enter New Password</label>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name</label>
                   <input
-                    type="password"
+                    type="text"
                     required
-                    value={newPassword}
-                    onChange={e => setNewPassword(e.target.value)}
-                    placeholder="Min 6 characters"
+                    value={newMember.name}
+                    onChange={e => setNewMember({ ...newMember, name: e.target.value })}
+                    placeholder="Enter full name"
                     className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
                   />
                 </div>
-              )}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={newMember.email}
+                    onChange={e => setNewMember({ ...newMember, email: e.target.value })}
+                    placeholder="member@example.com"
+                    className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Phone Number (Optional)</label>
+                  <input
+                    type="text"
+                    value={newMember.phone}
+                    onChange={e => setNewMember({ ...newMember, phone: e.target.value })}
+                    placeholder="080..."
+                    className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Password</label>
+                  <input
+                    type="password"
+                    required
+                    value={newMember.password}
+                    onChange={e => setNewMember({ ...newMember, password: e.target.value })}
+                    placeholder="Min. 8 characters"
+                    className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
+                  />
+                </div>
 
-              <div className="flex gap-3 justify-end pt-2">
-                <button
-                  type="button"
-                  onClick={() => router.push("/admin")}
-                  className="px-4 py-2 border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 rounded transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={modalLoading}
-                  className="px-4 py-2 bg-[#0B3D24] text-white text-sm font-medium hover:bg-[#072c1a] rounded transition-colors disabled:opacity-50"
-                >
-                  {modalLoading ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
+                <div className="flex gap-3 justify-end pt-2">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/admin")}
+                    className="px-4 py-2 border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 rounded transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={modalLoading}
+                    className="px-4 py-2 bg-[#0B3D24] text-white text-sm font-medium hover:bg-[#072c1a] rounded transition-colors disabled:opacity-50"
+                  >
+                    {modalLoading ? "Registering..." : "Add Member"}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              /* Modal Form: Change password / role */
+              <form onSubmit={handleUpdate} className="p-6 space-y-4">
+                {modalError && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+                    {modalError}
+                  </div>
+                )}
+                {modalMessage && (
+                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded text-sm">
+                    {modalMessage}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Select Member</label>
+                  <select
+                    required
+                    value={selectedUser}
+                    onChange={e => setSelectedUser(e.target.value)}
+                    className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
+                  >
+                    <option value="">-- Select Member --</option>
+                    {users.map(u => (
+                      <option key={u.id} value={u.id}>
+                        {u.name} ({u.role})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {currentAction === "change-role" ? (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Select Role</label>
+                    <select
+                      required
+                      value={newRole}
+                      onChange={e => setNewRole(e.target.value)}
+                      className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
+                    >
+                      <option value="user">User (Standard Member)</option>
+                      <option value="admin">Admin (Full Dashboard Access)</option>
+                    </select>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Enter New Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      placeholder="Min 6 characters"
+                      className="w-full border border-gray-300 px-3 py-2 text-sm rounded bg-gray-50 text-gray-800 focus:outline-none focus:border-[#0B3D24]"
+                    />
+                  </div>
+                )}
+
+                <div className="flex gap-3 justify-end pt-2">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/admin")}
+                    className="px-4 py-2 border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 rounded transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={modalLoading}
+                    className="px-4 py-2 bg-[#0B3D24] text-white text-sm font-medium hover:bg-[#072c1a] rounded transition-colors disabled:opacity-50"
+                  >
+                    {modalLoading ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

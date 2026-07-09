@@ -118,9 +118,6 @@ function SignupForm() {
                   />
                 </Link>
                 <h2 className="mt-4 text-lg font-bold text-gray-700">Create Account</h2>
-                <div className="mt-3 bg-green-50 border border-green-100 text-green-700 text-xs py-1.5 px-3 rounded inline-block">
-                  Invited by Sponsor: <strong className="font-mono">{refCode}</strong>
-                </div>
               </div>
 
               {error && (

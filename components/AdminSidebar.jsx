@@ -33,6 +33,7 @@ export default function AdminSidebar({ isOpen, setIsOpen, session }) {
       id: "members",
       isDropdown: true,
       children: [
+        { name: "Add New Member", href: "/admin?action=add-member" },
         { name: "Change Member Roles", href: "/admin?action=change-role" },
         { name: "Change Member Password", href: "/admin?action=change-password" },
         { name: "View All Members", href: "/admin?tab=all" },
