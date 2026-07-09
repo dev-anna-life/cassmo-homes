@@ -1,8 +1,7 @@
 datasource db {
-  // For local development, we use SQLite. 
-  // To transition to Vercel PostgreSQL in production, change this to "postgresql"
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 generator client {
