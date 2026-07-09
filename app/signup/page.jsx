@@ -1,65 +1,49 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { AlertTriangle, CheckCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 function SignupForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const refCode = params.get("ref");
+  const refFromUrl = params.get("ref") || "";
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     phone: "",
+    refCode: refFromUrl, // Pre-fill if link has code, but user can type it too
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // If no referral code, we show a clean message card instead of a blank screen
-  if (!refCode) {
-    return (
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
-        <div className="bg-[#0B3D24] text-white flex items-center justify-between px-5 py-3 shadow">
-          <div className="font-serif italic text-xl tracking-wide text-[#FE8F01]">Cassmo Homes</div>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center px-4 py-12">
-          <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="flex items-center justify-center mb-4 text-amber-500">
-              <AlertTriangle className="w-16 h-16" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-800 mb-2">Invitation Required</h2>
-            <p className="text-gray-500 text-sm mb-6">
-              You need an official invitation link to join this private referral network. Please contact an existing member for their invite link.
-            </p>
-            <Link 
-              href="/login" 
-              className="inline-block w-full bg-[#0B3D24] text-white py-3 rounded font-semibold text-sm hover:bg-[#072c1a] transition-colors"
-            >
-              Go to Member Login
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    if (!form.refCode.trim()) {
+      setError("Please enter a referral code to sign up.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, refCode }),
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          phone: form.phone,
+          refCode: form.refCode.trim().toUpperCase(),
+        }),
       });
 
       const data = await res.json();
@@ -72,21 +56,21 @@ function SignupForm() {
       }
     } catch (err) {
       setLoading(false);
-      setError("Failed to connect to the server.");
+      setError("Failed to connect to the server. Please try again.");
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
-      {/* Top green bar matching login portal */}
-      <div className="bg-[#0B3D24] text-white flex items-center justify-between px-5 py-3 shadow">
+      {/* Top header bar */}
+      <div className="bg-[#0B3D24] text-white flex items-center px-5 py-3 shadow">
         <div className="font-serif italic text-xl tracking-wide text-[#FE8F01]">Cassmo Homes</div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
+      <div className="flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-md">
 
-          {/* Success Signup State */}
+          {/* Success State */}
           {success ? (
             <div className="bg-white rounded-lg shadow-lg p-10 text-center">
               <div className="flex items-center justify-center mb-4">
@@ -98,7 +82,7 @@ function SignupForm() {
               <p className="text-gray-400 text-sm mb-8">Your account has been created. You can now log in.</p>
               <Link
                 href="/login"
-                className="block w-full bg-[#0B3D24] text-white py-3.5 rounded font-semibold text-sm hover:bg-[#072c1a] transition-colors"
+                className="block w-full bg-[#0B3D24] text-white py-3.5 rounded font-semibold text-sm hover:bg-[#072c1a] transition-colors text-center"
               >
                 Proceed to Login
               </Link>
@@ -117,7 +101,8 @@ function SignupForm() {
                     className="mx-auto h-12 w-auto object-contain"
                   />
                 </Link>
-                <h2 className="mt-4 text-lg font-bold text-gray-700">Create Account</h2>
+                <h2 className="mt-4 text-lg font-bold text-gray-700">Create Your Account</h2>
+                <p className="text-xs text-gray-400 mt-1">You need a referral code from an existing member</p>
               </div>
 
               {error && (
@@ -127,6 +112,25 @@ function SignupForm() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
+
+                {/* Referral Code — shown at the top so it's clear */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Referral / Invite Code <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={form.refCode}
+                    onChange={(e) => setForm({ ...form, refCode: e.target.value.toUpperCase() })}
+                    placeholder="Enter your invite code (e.g. AB12CD34)"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50 font-mono tracking-widest"
+                  />
+                  {refFromUrl && (
+                    <p className="text-xs text-green-600 mt-1">✓ Invite code pre-filled from your link</p>
+                  )}
+                </div>
+
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                     Full Name <span className="text-red-500">*</span>
@@ -157,13 +161,13 @@ function SignupForm() {
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                    Phone Number (Optional)
+                    Phone Number <span className="text-gray-400 font-normal normal-case">(optional)</span>
                   </label>
                   <input
                     type="tel"
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    placeholder="Enter phone number"
+                    placeholder="e.g. 08012345678"
                     className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
                   />
                 </div>
@@ -194,7 +198,7 @@ function SignupForm() {
                       Creating account...
                     </span>
                   ) : (
-                    "✦ REGISTER ACCOUNT"
+                    "✦ CREATE ACCOUNT"
                   )}
                 </button>
               </form>
@@ -202,7 +206,7 @@ function SignupForm() {
               <p className="mt-6 text-center text-xs text-gray-400">
                 Already have an account?{" "}
                 <Link href="/login" className="text-[#FE8F01] hover:underline font-semibold">
-                  Sign in
+                  Sign in here
                 </Link>
               </p>
             </div>
