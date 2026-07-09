@@ -24,11 +24,16 @@ function AdminDashboardContent() {
   const [modalError, setModalError] = useState("");
 
   // Offline prospects mockup
-  const [prospects, setProspects] = useState([
-    { id: "p1", name: "Amara Okeke", phone: "08099887766", email: "amara@gmail.com", date: "2026-07-08" },
-    { id: "p2", name: "Tunde Bakare", phone: "08122334455", email: "tunde@gmail.com", date: "2026-07-09" }
-  ]);
+  const [prospects, setProspects] = useState([]);
   const [newProspect, setNewProspect] = useState({ name: "", phone: "", email: "" });
+  const [expandedUsers, setExpandedUsers] = useState({});
+
+  const toggleExpand = (userId) => {
+    setExpandedUsers(prev => ({
+      ...prev,
+      [userId]: !prev[userId]
+    }));
+  };
 
   const fetchUsers = () => {
     fetch("/api/admin/users")

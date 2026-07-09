@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 
 function SignupForm() {
   const router = useRouter();
@@ -17,149 +18,198 @@ function SignupForm() {
     phone: "",
   });
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Redirect away if no referral code
-  useEffect(() => {
-    if (!refCode) {
-      router.replace("/login?error=invitation");
-    }
-  }, [refCode, router]);
+  // If no referral code, we show a clean message card instead of a blank screen
+  if (!refCode) {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
+        <div className="bg-[#0B3D24] text-white flex items-center justify-between px-5 py-3 shadow">
+          <div className="font-serif italic text-xl tracking-wide text-[#FE8F01]">Cassmo Homes</div>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 text-center">
+            <div className="flex items-center justify-center mb-4 text-amber-500">
+              <AlertTriangle className="w-16 h-16" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Invitation Required</h2>
+            <p className="text-gray-500 text-sm mb-6">
+              You need an official invitation link to join this private referral network. Please contact an existing member for their invite link.
+            </p>
+            <Link 
+              href="/login" 
+              className="inline-block w-full bg-[#0B3D24] text-white py-3 rounded font-semibold text-sm hover:bg-[#072c1a] transition-colors"
+            >
+              Go to Member Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, refCode }),
-    });
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, refCode }),
+      });
 
-    const data = await res.json();
-    setLoading(false);
+      const data = await res.json();
+      setLoading(false);
 
-    if (!res.ok) {
-      setError(data.error || "Something went wrong.");
-    } else {
-      router.push("/login?message=Account created! Please sign in.");
+      if (!res.ok) {
+        setError(data.error || "Something went wrong.");
+      } else {
+        setSuccess(true);
+      }
+    } catch (err) {
+      setLoading(false);
+      setError("Failed to connect to the server.");
     }
   };
 
-  if (!refCode) return null;
-
   return (
-    <div className="min-h-screen bg-forest flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Orbs */}
-      <div className="orb orb-a h-72 w-72 bg-accent/15 top-10 -left-16" />
-      <div className="orb orb-b h-96 w-96 bg-brand-green/10 bottom-0 right-0" />
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
+      {/* Top green bar matching login portal */}
+      <div className="bg-[#0B3D24] text-white flex items-center justify-between px-5 py-3 shadow">
+        <div className="font-serif italic text-xl tracking-wide text-[#FE8F01]">Cassmo Homes</div>
+      </div>
 
-      <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
-        <div className="mb-8 text-center">
-          <Link href="/">
-            <Image
-              src="/images/logo-white.png"
-              alt="Cassmo Homes"
-              width={160}
-              height={48}
-              className="mx-auto h-12 w-auto"
-            />
-          </Link>
-          <p className="mt-4 text-cream/60 text-sm">
-            You&apos;ve been invited to join Cassmo Homes
-          </p>
-        </div>
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
 
-        <div className="bg-white/5 border border-cream/10 backdrop-blur-sm p-8 rounded-sm">
-          {/* Referral badge */}
-          <div className="mb-6 flex items-center gap-2 bg-brand-green/10 border border-brand-green/30 px-4 py-2.5 rounded-sm">
-            <span className="h-2 w-2 rounded-full bg-brand-green shrink-0" />
-            <span className="text-xs text-brand-green font-medium">
-              Invitation code: <strong>{refCode}</strong>
-            </span>
-          </div>
+          {/* Success Signup State */}
+          {success ? (
+            <div className="bg-white rounded-lg shadow-lg p-10 text-center">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-20 h-20 rounded-full border-4 border-green-200 flex items-center justify-center">
+                  <CheckCircle className="w-12 h-12 text-green-400" strokeWidth={1.5} />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-1">Registration Successful!</h2>
+              <p className="text-gray-400 text-sm mb-8">Your account has been created. You can now log in.</p>
+              <Link
+                href="/login"
+                className="block w-full bg-[#0B3D24] text-white py-3.5 rounded font-semibold text-sm hover:bg-[#072c1a] transition-colors"
+              >
+                Proceed to Login
+              </Link>
+            </div>
+          ) : (
+            /* Registration Form */
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              {/* Logo */}
+              <div className="mb-6 text-center">
+                <Link href="/">
+                  <Image
+                    src="/images/logo-color.png"
+                    alt="Cassmo Homes"
+                    width={180}
+                    height={60}
+                    className="mx-auto h-12 w-auto object-contain"
+                  />
+                </Link>
+                <h2 className="mt-4 text-lg font-bold text-gray-700">Create Account</h2>
+                <div className="mt-3 bg-green-50 border border-green-100 text-green-700 text-xs py-1.5 px-3 rounded inline-block">
+                  Invited by Sponsor: <strong className="font-mono">{refCode}</strong>
+                </div>
+              </div>
 
-          {error && (
-            <div className="mb-5 bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3 rounded-sm">
-              {error}
+              {error && (
+                <div className="mb-5 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="Enter your full name"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="Enter your email address"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Phone Number (Optional)
+                  </label>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    placeholder="Enter phone number"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={8}
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    placeholder="Min. 8 characters"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#0B3D24] text-white font-semibold py-3.5 text-sm hover:bg-[#072c1a] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed rounded mt-2"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Creating account...
+                    </span>
+                  ) : (
+                    "✦ REGISTER ACCOUNT"
+                  )}
+                </button>
+              </form>
+
+              <p className="mt-6 text-center text-xs text-gray-400">
+                Already have an account?{" "}
+                <Link href="/login" className="text-[#FE8F01] hover:underline font-semibold">
+                  Sign in
+                </Link>
+              </p>
             </div>
           )}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-cream/60 mb-2">
-                Full Name <span className="text-accent">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Adah John"
-                className="w-full bg-white/10 border border-cream/20 text-cream placeholder-cream/30 px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors rounded-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-cream/60 mb-2">
-                Email Address <span className="text-accent">*</span>
-              </label>
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="you@example.com"
-                className="w-full bg-white/10 border border-cream/20 text-cream placeholder-cream/30 px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors rounded-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-cream/60 mb-2">
-                Password <span className="text-accent">*</span>
-              </label>
-              <input
-                type="password"
-                required
-                minLength={8}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                placeholder="Min. 8 characters"
-                className="w-full bg-white/10 border border-cream/20 text-cream placeholder-cream/30 px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors rounded-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-cream/60 mb-2">
-                Phone Number{" "}
-                <span className="text-cream/30 font-normal normal-case">(optional)</span>
-              </label>
-              <input
-                type="tel"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                placeholder="+234 900 000 0000"
-                className="w-full bg-white/10 border border-cream/20 text-cream placeholder-cream/30 px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors rounded-sm"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-accent text-forest-deep font-semibold py-3.5 text-sm transition-all duration-300 hover:bg-accent-dark active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed rounded-sm"
-            >
-              {loading ? "Creating account..." : "Create Account"}
-            </button>
-          </form>
-
-          <p className="mt-6 text-center text-xs text-cream/40">
-            Already have an account?{" "}
-            <Link href="/login" className="text-accent hover:underline">
-              Sign in
-            </Link>
-          </p>
         </div>
       </div>
     </div>
@@ -168,7 +218,11 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <Suspense>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="h-8 w-8 border-4 border-[#0B3D24] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
       <SignupForm />
     </Suspense>
   );
