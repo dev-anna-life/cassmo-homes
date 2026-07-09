@@ -207,7 +207,7 @@ function MembersSection({ users, loading, action, onRefresh }) {
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Select Member</label>
               <select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)} className="w-full border border-gray-300 px-4 py-2.5 text-sm rounded focus:outline-none focus:border-[#0B3D24]">
-                <option value="">— Choose a member —</option>
+                <option value="">Choose a member</option>
                 {users.map((u) => (
                   <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
                 ))}
@@ -505,16 +505,16 @@ function PropertySalesSection({ data, onRefresh }) {
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Property</label>
               <select value={form.propertyId} onChange={(e) => setForm({ ...form, propertyId: e.target.value })} required className="w-full border border-gray-300 px-4 py-2.5 text-sm rounded focus:outline-none focus:border-[#0B3D24]">
-                <option value="">— Select a property —</option>
+                <option value="">Select a property</option>
                 {properties.map((p) => (
-                  <option key={p.id} value={p.id}>{p.title} — {fmt(p.price)} ({p.commissionRate}% comm.)</option>
+                  <option key={p.id} value={p.id}>{p.title} | {fmt(p.price)} ({p.commissionRate}% comm.)</option>
                 ))}
               </select>
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Agent (Member who made the sale)</label>
               <select value={form.agentId} onChange={(e) => setForm({ ...form, agentId: e.target.value })} required className="w-full border border-gray-300 px-4 py-2.5 text-sm rounded focus:outline-none focus:border-[#0B3D24]">
-                <option value="">— Select agent —</option>
+                <option value="">Select agent</option>
                 {agents.map((u) => (
                   <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
                 ))}
@@ -782,7 +782,7 @@ function ExtrasSection({ data }) {
           <p className="text-sm text-gray-500 mb-4">Upload official flyers, estate layouts, and brochures for members to download.</p>
           <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
             <Plus className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-xs text-gray-400">File upload — coming soon</p>
+            <p className="text-xs text-gray-400">File upload will be available here</p>
           </div>
         </div>
 

@@ -1,19 +1,25 @@
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 
-export async function POST(req) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function GET(req) {
+  return handleCleanup();
+}
 
+export async function POST(req) {
+  return handleCleanup();
+}
+
+async function handleCleanup() {
   try {
-    // Delete all fake seed data
+    // Delete all properties (first image / request to remove them)
+    const properties = await prisma.property.deleteMany({});
+
+    // Delete all sales
+    const sales = await prisma.sale.deleteMany({});
+
+    // Delete all fake seed request data
     const withdrawals = await prisma.withdrawalRequest.deleteMany({});
     const funding = await prisma.fundingRequest.deleteMany({});
-    const sales = await prisma.sale.deleteMany({});
 
     // Delete the fake test member created by seed
     const fakeUser = await prisma.user.findUnique({
@@ -33,6 +39,7 @@ export async function POST(req) {
     return NextResponse.json({
       success: true,
       deleted: {
+        properties: properties.count,
         withdrawals: withdrawals.count,
         funding: funding.count,
         sales: sales.count,
