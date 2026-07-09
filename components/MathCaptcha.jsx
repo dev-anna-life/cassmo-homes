@@ -3,11 +3,10 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { RefreshCw, ShieldCheck } from "lucide-react";
 
-const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no I, O, 0, 1 (confusing)
+const CHARS = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no o, O, 0, i, I, l, 1 (confusing)
 const LENGTH = 6;
 
 function generateCode() {
-  // Use current timestamp as additional entropy seed
   const seed = Date.now();
   return Array.from({ length: LENGTH }, (_, i) =>
     CHARS.charAt(Math.floor(((seed * (i + 1) * 9301 + 49297) % 233280) / 233280 * CHARS.length + Math.random() * CHARS.length) % CHARS.length)
@@ -124,7 +123,7 @@ export default function VisualCaptcha({ onVerified }) {
   }, [code]);
 
   const handleChange = (e) => {
-    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const val = e.target.value.replace(/[^A-Za-z0-9]/g, "");
     setInput(val);
     setError(false);
 
@@ -189,7 +188,7 @@ export default function VisualCaptcha({ onVerified }) {
             placeholder={`Type ${LENGTH} characters`}
             autoComplete="off"
             spellCheck={false}
-            className={`w-full text-center border rounded px-2 py-2.5 text-sm font-mono font-bold tracking-[0.2em] uppercase transition-all focus:outline-none
+            className={`w-full text-center border rounded px-2 py-2.5 text-sm font-mono font-bold tracking-[0.2em] transition-all focus:outline-none
               ${verified
                 ? "border-green-400 bg-green-50 text-green-700"
                 : error

@@ -1061,7 +1061,13 @@ function AdminDashboardContent() {
 
   const [section, setSection] = useState("dashboard");
   const [action, setAction] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      setSidebarOpen(true);
+    }
+  }, []);
 
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
@@ -1122,6 +1128,12 @@ function AdminDashboardContent() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f0f2f5]">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       <AdminSidebar
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
