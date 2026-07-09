@@ -1,117 +1,215 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { RefreshCw, ShieldCheck } from "lucide-react";
 
-function generateChallenge() {
-  const ops = ["+", "-"];
-  const op = ops[Math.floor(Math.random() * ops.length)];
-  let a, b;
-  if (op === "+") {
-    a = Math.floor(Math.random() * 15) + 1;
-    b = Math.floor(Math.random() * 15) + 1;
-  } else {
-    a = Math.floor(Math.random() * 15) + 6;
-    b = Math.floor(Math.random() * (a - 1)) + 1;
-  }
-  return { a, b, op, answer: op === "+" ? a + b : a - b };
+const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no I, O, 0, 1 (confusing)
+const LENGTH = 6;
+
+function generateCode() {
+  return Array.from({ length: LENGTH }, () =>
+    CHARS.charAt(Math.floor(Math.random() * CHARS.length))
+  ).join("");
 }
 
-export default function MathCaptcha({ onVerified }) {
-  const [challenge, setChallenge] = useState(null);
+function drawCaptcha(canvas, code) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width;
+  const H = canvas.height;
+
+  // Background
+  ctx.fillStyle = "#f0f4f8";
+  ctx.fillRect(0, 0, W, H);
+
+  // Background noise dots
+  for (let i = 0; i < 80; i++) {
+    ctx.beginPath();
+    ctx.arc(
+      Math.random() * W,
+      Math.random() * H,
+      Math.random() * 2,
+      0,
+      Math.PI * 2
+    );
+    ctx.fillStyle = `hsla(${Math.random() * 360}, 40%, 70%, 0.6)`;
+    ctx.fill();
+  }
+
+  // Noise lines (behind text)
+  for (let i = 0; i < 6; i++) {
+    ctx.beginPath();
+    ctx.moveTo(Math.random() * W, Math.random() * H);
+    ctx.bezierCurveTo(
+      Math.random() * W, Math.random() * H,
+      Math.random() * W, Math.random() * H,
+      Math.random() * W, Math.random() * H
+    );
+    ctx.strokeStyle = `hsla(${Math.random() * 360}, 50%, 55%, 0.35)`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // Draw each character with individual distortion
+  const charW = W / (LENGTH + 1);
+  const colors = [
+    "#0B3D24", "#1a5c38", "#7c3aed", "#b45309",
+    "#0369a1", "#be123c", "#0f766e", "#92400e",
+  ];
+
+  for (let i = 0; i < code.length; i++) {
+    ctx.save();
+
+    const x = charW * (i + 0.8) + charW * 0.1;
+    const y = H / 2 + 6;
+
+    ctx.translate(x, y);
+    // Random slight rotation per character
+    ctx.rotate((Math.random() - 0.5) * 0.45);
+    // Random slight scale
+    const scale = 0.85 + Math.random() * 0.3;
+    ctx.scale(scale, scale);
+
+    // Random font size variation
+    const fontSize = 22 + Math.floor(Math.random() * 6);
+    const fonts = ["Arial Black", "Georgia", "Verdana", "Trebuchet MS", "Impact"];
+    ctx.font = `bold ${fontSize}px "${fonts[i % fonts.length]}"`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Slight shadow for depth
+    ctx.shadowColor = "rgba(0,0,0,0.15)";
+    ctx.shadowBlur = 2;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fillText(code[i], 0, 0);
+    ctx.restore();
+  }
+
+  // Overlay noise lines (on top of text)
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, Math.random() * H);
+    ctx.lineTo(W, Math.random() * H);
+    ctx.strokeStyle = `hsla(${Math.random() * 360}, 60%, 50%, 0.2)`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+}
+
+export default function VisualCaptcha({ onVerified }) {
+  const canvasRef = useRef(null);
+  const [code, setCode] = useState("");
   const [input, setInput] = useState("");
   const [verified, setVerified] = useState(false);
-  const [shake, setShake] = useState(false);
-  const [attempts, setAttempts] = useState(0);
+  const [error, setError] = useState(false);
 
-  const reset = useCallback(() => {
-    setChallenge(generateChallenge());
+  const refresh = useCallback(() => {
+    const newCode = generateCode();
+    setCode(newCode);
     setInput("");
     setVerified(false);
-    setAttempts(0);
+    setError(false);
     onVerified(false);
   }, [onVerified]);
 
+  // Draw when code changes
   useEffect(() => {
-    setChallenge(generateChallenge());
-  }, []);
+    if (!code) {
+      refresh();
+      return;
+    }
+    const canvas = canvasRef.current;
+    if (canvas) drawCaptcha(canvas, code);
+  }, [code, refresh]);
 
   const handleChange = (e) => {
-    const val = e.target.value;
-    // Only allow digits and minus sign
-    if (!/^-?\d*$/.test(val)) return;
+    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
     setInput(val);
+    setError(false);
 
-    if (val === "") return;
-    const parsed = parseInt(val, 10);
-    if (!isNaN(parsed) && parsed === challenge.answer) {
-      setVerified(true);
-      onVerified(true);
-    } else if (val.length >= String(Math.abs(challenge.answer)).length + (challenge.answer < 0 ? 1 : 0)) {
-      // Wrong answer — shake and reset
-      setShake(true);
-      setAttempts((p) => p + 1);
-      setTimeout(() => {
-        setShake(false);
-        setChallenge(generateChallenge());
-        setInput("");
-      }, 600);
+    if (val.length === LENGTH) {
+      if (val === code) {
+        setVerified(true);
+        onVerified(true);
+        setError(false);
+      } else {
+        setError(true);
+        onVerified(false);
+        // Auto-refresh after showing error briefly
+        setTimeout(() => {
+          refresh();
+        }, 800);
+      }
     }
   };
 
-  if (!challenge) return null;
-
   return (
-    <div className="rounded border border-gray-200 bg-gray-50 px-4 py-3">
-      <div className="flex items-center justify-between mb-2">
+    <div className="rounded border border-gray-200 bg-gray-50 px-4 py-3 space-y-2">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-[#0B3D24]" />
           Security Check
         </span>
         <button
           type="button"
-          onClick={reset}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
-          title="New question"
+          onClick={refresh}
+          className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#0B3D24] transition-colors"
+          title="Refresh code"
         >
           <RefreshCw className="w-3.5 h-3.5" />
+          New code
         </button>
       </div>
 
+      {/* Canvas */}
       <div className="flex items-center gap-3">
-        {/* Math question */}
-        <div className="flex items-center gap-2 flex-1">
-          <span className="text-sm font-bold text-gray-800 font-mono bg-white border border-gray-200 rounded px-3 py-2 select-none min-w-[110px] text-center">
-            {challenge.a} {challenge.op} {challenge.b} = ?
-          </span>
-          <span className="text-gray-400 text-sm">=</span>
+        <canvas
+          ref={canvasRef}
+          width={200}
+          height={56}
+          className={`rounded border select-none flex-shrink-0 transition-all ${
+            verified
+              ? "border-green-400 opacity-60"
+              : error
+              ? "border-red-400 animate-shake"
+              : "border-gray-300"
+          }`}
+          style={{ imageRendering: "pixelated" }}
+        />
+
+        <div className="flex-1">
           <input
             type="text"
-            inputMode="numeric"
+            maxLength={LENGTH}
             value={input}
             onChange={handleChange}
             disabled={verified}
-            placeholder="?"
-            className={`w-16 text-center border rounded px-2 py-2 text-sm font-mono font-bold transition-all
+            placeholder={`Type ${LENGTH} characters`}
+            autoComplete="off"
+            spellCheck={false}
+            className={`w-full text-center border rounded px-2 py-2.5 text-sm font-mono font-bold tracking-[0.2em] uppercase transition-all focus:outline-none
               ${verified
                 ? "border-green-400 bg-green-50 text-green-700"
-                : shake
-                ? "border-red-400 bg-red-50 animate-[shake_0.4s_ease]"
-                : "border-gray-300 bg-white text-gray-800 focus:border-[#0B3D24] focus:outline-none"
+                : error
+                ? "border-red-400 bg-red-50 text-red-600"
+                : "border-gray-300 bg-white text-gray-800 focus:border-[#0B3D24]"
               }`}
           />
-        </div>
 
-        {/* Status badge */}
-        {verified ? (
-          <span className="text-xs font-bold text-green-600 flex items-center gap-1 whitespace-nowrap">
-            <ShieldCheck className="w-4 h-4" /> Verified
-          </span>
-        ) : (
-          <span className="text-xs text-gray-400 whitespace-nowrap">
-            {attempts > 0 ? `Try again` : `Solve to continue`}
-          </span>
-        )}
+          {/* Status */}
+          <p className={`text-xs mt-1 text-center font-semibold transition-all ${
+            verified ? "text-green-600" : error ? "text-red-500" : "text-gray-400"
+          }`}>
+            {verified
+              ? "✓ Verified — you're human!"
+              : error
+              ? "✗ Wrong — try the new code"
+              : `Enter the ${LENGTH} characters shown`}
+          </p>
+        </div>
       </div>
     </div>
   );
