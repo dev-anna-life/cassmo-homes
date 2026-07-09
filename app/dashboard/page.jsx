@@ -71,7 +71,12 @@ export default function DashboardPage() {
           </Link>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-white/70 hidden sm:block">{session.user.name}</span>
+          <div className="flex flex-col items-end">
+            <span className="text-sm text-white/70 hidden sm:block">{session.user.name}</span>
+            {session.user.username && (
+              <span className="text-xs text-white/40 hidden sm:block">@{session.user.username}</span>
+            )}
+          </div>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-1.5 text-xs font-semibold text-white/70 hover:text-white border border-white/20 hover:border-white/50 px-3 py-1.5 rounded transition-colors"
@@ -90,6 +95,9 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold">
             Welcome, {session.user.name.split(" ")[0]}! 👋
           </h1>
+          {session.user.username && (
+            <p className="text-[#FE8F01]/80 text-sm font-mono mt-0.5">@{session.user.username}</p>
+          )}
           <p className="text-white/60 text-sm mt-1">
             Share your referral code or link below to invite people to Cassmo Homes.
           </p>

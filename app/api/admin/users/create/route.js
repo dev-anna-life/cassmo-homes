@@ -18,10 +18,23 @@ export async function POST(req) {
   }
 
   try {
-    const { name, email, password, phone } = await req.json();
+    const { name, username, email, password, phone } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "Name, email and password are required" }, { status: 400 });
+    }
+
+    // Auto-generate username from name if not provided
+    let usernameToUse = username?.trim()
+      ? username.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_")
+      : name.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+
+    // Ensure username uniqueness by appending numbers if needed
+    let finalUsername = usernameToUse;
+    let counter = 1;
+    while (await prisma.user.findUnique({ where: { username: finalUsername } })) {
+      finalUsername = `${usernameToUse}${counter}`;
+      counter++;
     }
 
     const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
@@ -39,6 +52,7 @@ export async function POST(req) {
     const user = await prisma.user.create({
       data: {
         name,
+        username: finalUsername,
         email: email.toLowerCase().trim(),
         password: hashed,
         phone: phone || null,
@@ -47,7 +61,7 @@ export async function POST(req) {
       },
     });
 
-    return NextResponse.json({ success: true, userId: user.id });
+    return NextResponse.json({ success: true, userId: user.id, username: finalUsername });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

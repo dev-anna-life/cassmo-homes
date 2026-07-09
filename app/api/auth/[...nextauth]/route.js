@@ -29,6 +29,7 @@ export const authOptions = {
           email: user.email,
           role: user.role,
           referralCode: user.referralCode,
+          username: user.username,
         };
       },
     }),
@@ -39,6 +40,7 @@ export const authOptions = {
         token.id = user.id;
         token.role = user.role;
         token.referralCode = user.referralCode;
+        token.username = user.username;
       }
       return token;
     },
@@ -47,6 +49,7 @@ export const authOptions = {
         session.user.id = token.id;
         session.user.role = token.role;
         session.user.referralCode = token.referralCode;
+        session.user.username = token.username;
       }
       return session;
     },

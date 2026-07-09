@@ -11,12 +11,38 @@ function generateCode(length = 8) {
 
 export async function POST(request) {
   try {
-    const { name, email, password, phone, refCode, bankName, accountNumber, accountName } = await request.json();
+    const {
+      name,
+      username,
+      email,
+      password,
+      phone,
+      refCode,
+      bankName,
+      accountNumber,
+      accountName,
+    } = await request.json();
 
     // Validate required fields
-    if (!name || !email || !password) {
+    if (!name || !username || !email || !password) {
       return NextResponse.json(
-        { error: "Name, email and password are required." },
+        { error: "Full name, username, email and password are required." },
+        { status: 400 }
+      );
+    }
+
+    // Validate bank details are provided
+    if (!bankName || !accountNumber || !accountName) {
+      return NextResponse.json(
+        { error: "Bank name, account number and account name are required." },
+        { status: 400 }
+      );
+    }
+
+    // Validate account number is exactly 10 digits
+    if (!/^\d{10}$/.test(accountNumber)) {
+      return NextResponse.json(
+        { error: "Account number must be exactly 10 digits." },
         { status: 400 }
       );
     }
@@ -53,6 +79,19 @@ export async function POST(request) {
       );
     }
 
+    // Check if username already taken
+    const usernameClean = username.trim().toLowerCase().replace(/\s+/g, "_");
+    const existingUsername = await prisma.user.findUnique({
+      where: { username: usernameClean },
+    });
+
+    if (existingUsername) {
+      return NextResponse.json(
+        { error: "This username is already taken. Please choose another." },
+        { status: 400 }
+      );
+    }
+
     // Hash password and generate unique referral code for the new user
     const hashedPassword = await bcrypt.hash(password, 12);
     let newRefCode = generateCode();
@@ -65,15 +104,16 @@ export async function POST(request) {
     const user = await prisma.user.create({
       data: {
         name: name.trim(),
+        username: usernameClean,
         email: email.toLowerCase().trim(),
         password: hashedPassword,
         phone: phone?.trim() || null,
         referralCode: newRefCode,
         referredById: referrer.id,
         role: "user",
-        bankName: bankName?.trim() || null,
-        accountNumber: accountNumber?.trim() || null,
-        accountName: accountName?.trim() || null,
+        bankName: bankName.trim(),
+        accountNumber: accountNumber.trim(),
+        accountName: accountName.trim(),
       },
     });
 

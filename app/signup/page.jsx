@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, User, Lock, Mail, Phone, CreditCard, Building2, Hash } from "lucide-react";
 
 function SignupForm() {
   const router = useRouter();
@@ -13,17 +13,47 @@ function SignupForm() {
 
   const [form, setForm] = useState({
     name: "",
+    username: "",
     email: "",
     password: "",
     phone: "",
-    refCode: refFromUrl, // Pre-fill if link has code, but user can type it too
+    refCode: refFromUrl,
     bankName: "",
     accountNumber: "",
     accountName: "",
   });
+  const [referrer, setReferrer] = useState(null); // { name, username }
+  const [refError, setRefError] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Lookup referrer when refCode changes
+  useEffect(() => {
+    const code = form.refCode.trim().toUpperCase();
+    if (code.length < 6) {
+      setReferrer(null);
+      setRefError(null);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/auth/referrer?ref=${code}`);
+        const data = await res.json();
+        if (res.ok) {
+          setReferrer(data);
+          setRefError(null);
+        } else {
+          setReferrer(null);
+          setRefError("Invalid referral code");
+        }
+      } catch {
+        setReferrer(null);
+        setRefError(null);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [form.refCode]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,12 +66,25 @@ function SignupForm() {
       return;
     }
 
+    if (!referrer) {
+      setError("Please enter a valid referral code before continuing.");
+      setLoading(false);
+      return;
+    }
+
+    if (!/^\d{10}$/.test(form.accountNumber)) {
+      setError("Account number must be exactly 10 digits.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
+          username: form.username,
           email: form.email,
           password: form.password,
           phone: form.phone,
@@ -119,7 +162,7 @@ function SignupForm() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
 
-                {/* Referral Code — shown at the top so it's clear */}
+                {/* Referral Code */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                     Referral / Invite Code <span className="text-red-500">*</span>
@@ -132,11 +175,27 @@ function SignupForm() {
                     placeholder="Enter your invite code (e.g. AB12CD34)"
                     className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50 font-mono tracking-widest"
                   />
-                  {refFromUrl && (
-                    <p className="text-xs text-green-600 mt-1">✓ Invite code pre-filled from your link</p>
+                  {/* Referrer name banner */}
+                  {referrer && (
+                    <div className="mt-2 bg-green-50 border border-green-200 rounded px-3 py-2.5 flex items-center gap-2">
+                      <div className="w-8 h-8 bg-[#0B3D24] rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        {referrer.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-green-800">Referred by: {referrer.name}</p>
+                        {referrer.username && (
+                          <p className="text-xs text-green-600">@{referrer.username}</p>
+                        )}
+                      </div>
+                      <span className="ml-auto text-green-500 text-xs font-bold">✓ Valid</span>
+                    </div>
+                  )}
+                  {refError && (
+                    <p className="text-xs text-red-500 mt-1">{refError}</p>
                   )}
                 </div>
 
+                {/* Full Name */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                     Full Name <span className="text-red-500">*</span>
@@ -151,6 +210,28 @@ function SignupForm() {
                   />
                 </div>
 
+                {/* Username */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Username <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">@</span>
+                    <input
+                      type="text"
+                      required
+                      value={form.username}
+                      onChange={(e) =>
+                        setForm({ ...form, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "") })
+                      }
+                      placeholder="choose_a_username"
+                      className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 pl-8 pr-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50 font-mono"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Lowercase letters, numbers and underscores only</p>
+                </div>
+
+                {/* Email */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                     Email Address <span className="text-red-500">*</span>
@@ -165,6 +246,7 @@ function SignupForm() {
                   />
                 </div>
 
+                {/* Phone */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                     Phone Number <span className="text-gray-400 font-normal normal-case">(optional)</span>
@@ -178,6 +260,7 @@ function SignupForm() {
                   />
                 </div>
 
+                {/* Password */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                     Password <span className="text-red-500">*</span>
@@ -193,48 +276,75 @@ function SignupForm() {
                   />
                 </div>
 
-                {/* Banking details section */}
-                <div className="pt-4 border-t border-gray-100 space-y-4">
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    Bank Payout Details (Optional)
+                {/* Banking details section — REQUIRED */}
+                <div className="pt-4 border-t border-gray-200 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-[#0B3D24]" />
+                    <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Bank Payout Details <span className="text-red-500">*</span>
+                    </span>
                   </div>
+                  <p className="text-xs text-gray-400 -mt-2">
+                    Required for commission payments. These details will be used to pay you directly.
+                  </p>
+
+                  {/* Bank Name */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                      Bank Name
+                      Bank Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
+                      required
                       value={form.bankName}
                       onChange={(e) => setForm({ ...form, bankName: e.target.value })}
-                      placeholder="e.g. Zenith Bank, GTBank"
+                      placeholder="e.g. Zenith Bank, GTBank, Access Bank"
                       className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
                     />
                   </div>
+
+                  {/* Account Number */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                      Account Number
+                      Account Number <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
+                      required
+                      inputMode="numeric"
                       maxLength={10}
-                      pattern="[0-9]*"
+                      pattern="[0-9]{10}"
                       value={form.accountNumber}
-                      onChange={(e) => setForm({ ...form, accountNumber: e.target.value.replace(/\D/g, "") })}
+                      onChange={(e) => setForm({ ...form, accountNumber: e.target.value.replace(/\D/g, "").slice(0, 10) })}
                       placeholder="10 digit account number"
-                      className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50 font-mono"
+                      className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50 font-mono tracking-widest"
                     />
+                    {form.accountNumber && form.accountNumber.length < 10 && (
+                      <p className="text-xs text-orange-500 mt-1">
+                        {10 - form.accountNumber.length} more digit{10 - form.accountNumber.length !== 1 ? "s" : ""} needed
+                      </p>
+                    )}
+                    {form.accountNumber.length === 10 && (
+                      <p className="text-xs text-green-600 mt-1">✓ 10 digits entered</p>
+                    )}
                   </div>
+
+                  {/* Account Name */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                      Account Name
+                      Account Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
+                      required
                       value={form.accountName}
                       onChange={(e) => setForm({ ...form, accountName: e.target.value })}
-                      placeholder="Name registered on bank account"
+                      placeholder="Exact name on your bank account"
                       className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
                     />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Must match exactly as it appears on your bank account
+                    </p>
                   </div>
                 </div>
 
@@ -249,7 +359,7 @@ function SignupForm() {
                       Creating account...
                     </span>
                   ) : (
-                    "✦ CREATE ACCOUNT"
+                    "CREATE ACCOUNT"
                   )}
                 </button>
               </form>

@@ -22,6 +22,8 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [successUrl, setSuccessUrl] = useState("/dashboard");
+  const [successName, setSuccessName] = useState("");
+  const [successUsername, setSuccessUsername] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,13 +45,15 @@ function LoginForm() {
       const session = await getSession();
       const redirectTo = session?.user?.role === "admin" ? "/admin" : "/dashboard";
       setSuccessUrl(redirectTo);
+      setSuccessName(session?.user?.name || "");
+      setSuccessUsername(session?.user?.username || "");
       setSuccess(true);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
-      {/* Top green bar matching White Rock portal using Cassmo green */}
+      {/* Top green bar */}
       <div className="bg-[#0B3D24] text-white flex items-center justify-between px-5 py-3 shadow">
         <div className="font-serif italic text-xl tracking-wide text-[#FE8F01]">Cassmo Homes</div>
       </div>
@@ -57,7 +61,7 @@ function LoginForm() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
 
-          {/* Success Modal — matches first screenshot exactly */}
+          {/* Success Modal */}
           {success && (
             <div className="bg-white rounded-lg shadow-lg p-10 text-center">
               <div className="flex items-center justify-center mb-4">
@@ -66,7 +70,16 @@ function LoginForm() {
                 </div>
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-1">Successful!</h2>
-              <p className="text-gray-400 text-sm mb-8">Login was Successful</p>
+              {successUsername ? (
+                <p className="text-gray-500 text-sm mb-1">
+                  Welcome back, <span className="font-semibold text-gray-700">{successName}</span>
+                </p>
+              ) : null}
+              {successUsername ? (
+                <p className="text-gray-400 text-xs mb-6">@{successUsername}</p>
+              ) : (
+                <p className="text-gray-400 text-sm mb-6">Login was Successful</p>
+              )}
               <button
                 onClick={() => {
                   router.push(successUrl);
@@ -142,7 +155,7 @@ function LoginForm() {
                       Signing in...
                     </span>
                   ) : (
-                    "✦ SIGN IN"
+                    "SIGN IN"
                   )}
                 </button>
               </form>
