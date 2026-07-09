@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle, User, Lock, Mail, Phone, CreditCard, Building2, Hash } from "lucide-react";
+import { CheckCircle, CreditCard } from "lucide-react";
+import MathCaptcha from "@/components/MathCaptcha";
 
 function SignupForm() {
   const router = useRouter();
@@ -22,30 +23,35 @@ function SignupForm() {
     accountNumber: "",
     accountName: "",
   });
-  const [referrer, setReferrer] = useState(null); // { name, username }
+
+  // referrer = { name, username, referralCode } from the API
+  const [referrer, setReferrer] = useState(null);
   const [refError, setRefError] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [captchaOk, setCaptchaOk] = useState(false);
 
-  // Lookup referrer when refCode changes
+  const handleCaptcha = useCallback((ok) => setCaptchaOk(ok), []);
+
+  // Lookup referrer when refCode changes (accepts username OR referral code)
   useEffect(() => {
-    const code = form.refCode.trim().toUpperCase();
-    if (code.length < 6) {
+    const code = form.refCode.trim();
+    if (code.length < 2) {
       setReferrer(null);
       setRefError(null);
       return;
     }
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/auth/referrer?ref=${code}`);
+        const res = await fetch(`/api/auth/referrer?ref=${encodeURIComponent(code)}`);
         const data = await res.json();
         if (res.ok) {
-          setReferrer(data);
+          setReferrer(data); // { name, username, referralCode }
           setRefError(null);
         } else {
           setReferrer(null);
-          setRefError("Invalid referral code");
+          setRefError("Invalid referral code or username");
         }
       } catch {
         setReferrer(null);
@@ -57,26 +63,24 @@ function SignupForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
 
-    if (!form.refCode.trim()) {
-      setError("Please enter a referral code to sign up.");
-      setLoading(false);
+    if (!captchaOk) {
+      setError("Please complete the security check first.");
       return;
     }
 
     if (!referrer) {
-      setError("Please enter a valid referral code before continuing.");
-      setLoading(false);
+      setError("Please enter a valid referral code or username before continuing.");
       return;
     }
 
     if (!/^\d{10}$/.test(form.accountNumber)) {
       setError("Account number must be exactly 10 digits.");
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
+    setError(null);
 
     try {
       const res = await fetch("/api/auth/signup", {
@@ -88,7 +92,8 @@ function SignupForm() {
           email: form.email,
           password: form.password,
           phone: form.phone,
-          refCode: form.refCode.trim().toUpperCase(),
+          // Always send the actual referral code (not username) to the backend
+          refCode: referrer.referralCode,
           bankName: form.bankName,
           accountNumber: form.accountNumber,
           accountName: form.accountName,
@@ -100,10 +105,11 @@ function SignupForm() {
 
       if (!res.ok) {
         setError(data.error || "Something went wrong.");
+        setCaptchaOk(false);
       } else {
         setSuccess(true);
       }
-    } catch (err) {
+    } catch {
       setLoading(false);
       setError("Failed to connect to the server. Please try again.");
     }
@@ -151,7 +157,7 @@ function SignupForm() {
                   />
                 </Link>
                 <h2 className="mt-4 text-lg font-bold text-gray-700">Create Your Account</h2>
-                <p className="text-xs text-gray-400 mt-1">You need a referral code from an existing member</p>
+                <p className="text-xs text-gray-400 mt-1">You need a referral from an existing member</p>
               </div>
 
               {error && (
@@ -162,17 +168,17 @@ function SignupForm() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
 
-                {/* Referral Code */}
+                {/* Referral Code / Username */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                    Referral / Invite Code <span className="text-red-500">*</span>
+                    Referral Code or Username <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={form.refCode}
-                    onChange={(e) => setForm({ ...form, refCode: e.target.value.toUpperCase() })}
-                    placeholder="Enter your invite code (e.g. AB12CD34)"
+                    onChange={(e) => setForm({ ...form, refCode: e.target.value })}
+                    placeholder="e.g. annastesia or AB12CD34"
                     className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50 font-mono tracking-widest"
                   />
                   {/* Referrer name banner */}
@@ -276,7 +282,7 @@ function SignupForm() {
                   />
                 </div>
 
-                {/* Banking details section — REQUIRED */}
+                {/* Banking details section */}
                 <div className="pt-4 border-t border-gray-200 space-y-4">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-[#0B3D24]" />
@@ -348,10 +354,13 @@ function SignupForm() {
                   </div>
                 </div>
 
+                {/* Math CAPTCHA */}
+                <MathCaptcha onVerified={handleCaptcha} />
+
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#0B3D24] text-white font-semibold py-3.5 text-sm hover:bg-[#072c1a] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed rounded mt-2"
+                  disabled={loading || !captchaOk}
+                  className="w-full bg-[#0B3D24] text-white font-semibold py-3.5 text-sm hover:bg-[#072c1a] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded mt-2"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">

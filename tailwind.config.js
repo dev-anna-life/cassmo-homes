@@ -53,6 +53,13 @@ module.exports = {
           "50%": { transform: "scale(1.03)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%": { transform: "translateX(-6px)" },
+          "40%": { transform: "translateX(6px)" },
+          "60%": { transform: "translateX(-4px)" },
+          "80%": { transform: "translateX(4px)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both",
@@ -60,6 +67,7 @@ module.exports = {
         "slide-in-left": "slide-in-left 0.6s ease-out both",
         "slide-in-right": "slide-in-right 0.6s ease-out both",
         "bounce-in": "bounce-in 0.5s ease-out both",
+        shake: "shake 0.4s ease",
       },
       transitionDuration: {
         "400": "400ms",

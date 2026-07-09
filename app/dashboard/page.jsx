@@ -29,7 +29,9 @@ export default function DashboardPage() {
   }
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app";
-  const referralLink = `${origin}/signup?ref=${session.user.referralCode}`;
+  // Use username in invite links — more personal and readable
+  const refSlug = session.user.username || session.user.referralCode;
+  const referralLink = `${origin}/signup?ref=${refSlug}`;
 
   const copyCode = () => {
     navigator.clipboard.writeText(session.user.referralCode);
@@ -112,10 +114,10 @@ export default function DashboardPage() {
 
           {/* Big Code Display */}
           <div className="bg-gray-50 border-2 border-dashed border-[#0B3D24]/30 rounded-lg p-6 text-center mb-4">
-            <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Your Unique Code</p>
-            <div className="font-mono text-4xl font-bold text-[#0B3D24] tracking-widest mb-4">
-              {session.user.referralCode}
+            <div className="font-mono text-3xl font-bold text-[#0B3D24] tracking-widest mb-1">
+              @{session.user.username || session.user.referralCode}
             </div>
+            <p className="text-xs text-gray-400 mb-4">This is your personal invite username</p>
             <button
               onClick={copyCode}
               className={`inline-flex items-center gap-2 px-5 py-2.5 rounded font-semibold text-sm transition-all ${

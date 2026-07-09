@@ -79,8 +79,10 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
   };
 
   const copyInvite = () => {
-    if (!session?.user?.referralCode) return;
-    const url = `${window.location.origin}/signup?ref=${session.user.referralCode}`;
+    if (!session?.user?.username && !session?.user?.referralCode) return;
+    // Use username in the link if available — more personal and readable
+    const ref = session.user.username || session.user.referralCode;
+    const url = `${window.location.origin}/signup?ref=${ref}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -137,18 +139,18 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
       <SectionHeader title="Dashboard" subtitle="Overview of all activity on Cassmo Homes." />
 
       {/* Admin Referral Link Banner */}
-      {session?.user?.referralCode && (
+      {(session?.user?.username || session?.user?.referralCode) && (
         <div className="bg-white rounded shadow p-5 border-l-4 border-[#0B3D24] mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h3 className="font-bold text-gray-800 text-sm">Your Admin Referral Details</h3>
+            <h3 className="font-bold text-gray-800 text-sm">Your Referral Invite Link</h3>
             <p className="text-xs text-gray-500 mt-1">
-              Copy your direct referral link below to register new members under your network.
+              Share this personalised link to register new members under your network.
             </p>
             <div className="mt-2 text-xs font-mono text-gray-600 bg-gray-50 border border-gray-200 rounded px-3 py-2 select-all break-all max-w-xl">
-              {`${typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app"}/signup?ref=${session.user.referralCode}`}
+              {`${typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app"}/signup?ref=${session.user.username || session.user.referralCode}`}
             </div>
             <div className="mt-1 text-xs text-gray-400">
-              Referral Code: <span className="font-bold text-gray-600 font-mono tracking-wider">{session.user.referralCode}</span>
+              Your username: <span className="font-bold text-gray-700 font-mono">@{session.user.username}</span>
             </div>
           </div>
           <button

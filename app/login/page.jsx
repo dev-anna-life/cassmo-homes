@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useCallback } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { CheckCircle } from "lucide-react";
+import MathCaptcha from "@/components/MathCaptcha";
 
 function LoginForm() {
   const router = useRouter();
@@ -24,9 +25,16 @@ function LoginForm() {
   const [successUrl, setSuccessUrl] = useState("/dashboard");
   const [successName, setSuccessName] = useState("");
   const [successUsername, setSuccessUsername] = useState("");
+  const [captchaOk, setCaptchaOk] = useState(false);
+
+  const handleCaptcha = useCallback((ok) => setCaptchaOk(ok), []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!captchaOk) {
+      setError("Please complete the security check first.");
+      return;
+    }
     setLoading(true);
     setError(null);
 
@@ -40,8 +48,8 @@ function LoginForm() {
 
     if (res?.error) {
       setError("Incorrect email or password. Please try again.");
+      setCaptchaOk(false); // reset CAPTCHA on wrong credentials
     } else {
-      // Read the session to determine role-based redirect
       const session = await getSession();
       const redirectTo = session?.user?.role === "admin" ? "/admin" : "/dashboard";
       setSuccessUrl(redirectTo);
@@ -144,10 +152,13 @@ function LoginForm() {
                   />
                 </div>
 
+                {/* Math CAPTCHA */}
+                <MathCaptcha onVerified={handleCaptcha} />
+
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#0B3D24] text-white font-semibold py-3.5 text-sm hover:bg-[#072c1a] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed rounded mt-2"
+                  disabled={loading || !captchaOk}
+                  className="w-full bg-[#0B3D24] text-white font-semibold py-3.5 text-sm hover:bg-[#072c1a] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded mt-2"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">

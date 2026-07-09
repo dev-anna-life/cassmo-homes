@@ -47,7 +47,7 @@ export async function POST(request) {
       );
     }
 
-    // Must have a valid referral code
+    // Must have a valid referral code or username
     if (!refCode) {
       return NextResponse.json(
         { error: "A valid referral link is required to sign up." },
@@ -55,9 +55,14 @@ export async function POST(request) {
       );
     }
 
-    // Find the referrer
-    const referrer = await prisma.user.findUnique({
-      where: { referralCode: refCode.toUpperCase() },
+    // Find the referrer by username OR referral code
+    const referrer = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { username: refCode.toLowerCase() },
+          { referralCode: refCode.toUpperCase() },
+        ],
+      },
     });
 
     if (!referrer) {
