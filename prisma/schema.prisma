@@ -9,15 +9,81 @@ generator client {
 }
 
 model User {
+  id                 String              @id @default(uuid())
+  name               String
+  email              String              @unique
+  password           String
+  phone              String?
+  referralCode       String              @unique
+  referredById       String?
+  referredBy         User?               @relation("ReferralChain", fields: [referredById], references: [id], onDelete: SetNull)
+  referredUsers      User[]              @relation("ReferralChain")
+  role               String              @default("user") // "admin" or "user"
+  createdAt          DateTime            @default(now())
+  
+  // Wallet & Bank Info
+  walletBalance      Float               @default(0.0)
+  totalWithdrawn     Float               @default(0.0)
+  bankName           String?
+  accountNumber      String?
+  accountName        String?
+
+  // Relations
+  sales              Sale[]              @relation("AgentSales")
+  fundingRequests    FundingRequest[]
+  withdrawalRequests WithdrawalRequest[]
+}
+
+model Property {
+  id             String   @id @default(uuid())
+  title          String
+  location       String
+  price          Float
+  commissionRate Float    @default(10.0) // E.g. 10.0 for 10%
+  description    String?
+  imageUrl       String?
+  createdAt      DateTime @default(now())
+
+  sales          Sale[]
+}
+
+model Sale {
+  id               String   @id @default(uuid())
+  buyerName        String
+  price            Float
+  commissionEarned Float
+  createdAt        DateTime @default(now())
+
+  // Relations
+  propertyId       String
+  property         Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  agentId          String
+  agent            User     @relation("AgentSales", fields: [agentId], references: [id], onDelete: Cascade)
+}
+
+model FundingRequest {
+  id         String   @id @default(uuid())
+  amount     Float
+  reference  String?
+  receiptUrl String?
+  status     String   @default("pending") // "pending", "approved", "rejected"
+  createdAt  DateTime @default(now())
+
+  // Relations
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WithdrawalRequest {
   id            String   @id @default(uuid())
-  name          String
-  email         String   @unique
-  password      String
-  phone         String?
-  referralCode  String   @unique
-  referredById  String?
-  referredBy    User?    @relation("ReferralChain", fields: [referredById], references: [id], onDelete: SetNull)
-  referredUsers User[]   @relation("ReferralChain")
-  role          String   @default("user") // "admin" or "user"
+  amount        Float
+  bankName      String
+  accountNumber String
+  accountName   String
+  status        String   @default("pending") // "pending", "completed", "cancelled"
   createdAt     DateTime @default(now())
+
+  // Relations
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
