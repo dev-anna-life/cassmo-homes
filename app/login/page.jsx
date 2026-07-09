@@ -5,12 +5,13 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { CheckCircle } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const errorParam = params.get("error");
-  const callbackUrl = params.get("callbackUrl") || "/dashboard";
+  const callbackUrl = params.get("callbackUrl") || "/admin";
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState(
@@ -21,6 +22,8 @@ function LoginForm() {
       : null
   );
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [successUrl, setSuccessUrl] = useState("/admin");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,85 +41,117 @@ function LoginForm() {
     if (res?.error) {
       setError("Incorrect email or password. Please try again.");
     } else {
-      router.push(callbackUrl);
-      router.refresh();
+      setSuccessUrl(callbackUrl);
+      setSuccess(true);
     }
   };
 
   return (
-    <div className="min-h-screen bg-forest flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Orbs */}
-      <div className="orb orb-a h-72 w-72 bg-accent/15 top-10 -left-16" />
-      <div className="orb orb-b h-96 w-96 bg-brand-green/10 bottom-0 right-0" />
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
+      {/* Top green bar matching White Rock portal */}
+      <div className="bg-[#0f9d58] text-white flex items-center justify-between px-5 py-3 shadow">
+        <div className="font-serif italic text-xl tracking-wide">Cassmo Admin</div>
+      </div>
 
-      <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
-        <div className="mb-8 text-center">
-          <Link href="/">
-            <Image
-              src="/images/logo-white.png"
-              alt="Cassmo Homes"
-              width={160}
-              height={48}
-              className="mx-auto h-12 w-auto"
-            />
-          </Link>
-          <p className="mt-4 text-cream/60 text-sm">
-            Sign in to your account
-          </p>
-        </div>
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
 
-        <div className="bg-white/5 border border-cream/10 backdrop-blur-sm p-8 rounded-sm">
-          {error && (
-            <div className="mb-6 bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3 rounded-sm">
-              {error}
+          {/* Success Modal — matches first screenshot exactly */}
+          {success && (
+            <div className="bg-white rounded-lg shadow-lg p-10 text-center">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-20 h-20 rounded-full border-4 border-green-200 flex items-center justify-center">
+                  <CheckCircle className="w-12 h-12 text-green-400" strokeWidth={1.5} />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-1">Successful!</h2>
+              <p className="text-gray-400 text-sm mb-8">Login was Successful</p>
+              <button
+                onClick={() => {
+                  router.push(successUrl);
+                  router.refresh();
+                }}
+                className="w-full bg-[#0f9d58] text-white py-3.5 rounded font-semibold text-sm hover:bg-[#0b8a4c] transition-colors"
+              >
+                Proceed To Your Admin Dashboard
+              </button>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-cream/60 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="you@example.com"
-                className="w-full bg-white/10 border border-cream/20 text-cream placeholder-cream/30 px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors rounded-sm"
-              />
+          {/* Login Form */}
+          {!success && (
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              {/* Logo */}
+              <div className="mb-6 text-center">
+                <Link href="/">
+                  <Image
+                    src="/images/logo.png"
+                    alt="Cassmo Homes"
+                    width={140}
+                    height={40}
+                    className="mx-auto h-10 w-auto object-contain"
+                  />
+                </Link>
+                <h2 className="mt-4 text-lg font-bold text-gray-700">Member Login</h2>
+              </div>
+
+              {error && (
+                <div className="mb-5 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="Enter your email"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0f9d58] transition-colors rounded bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    placeholder="Enter captcha"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0f9d58] transition-colors rounded bg-gray-50"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#0f9d58] text-white font-semibold py-3.5 text-sm hover:bg-[#0b8a4c] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed rounded mt-2"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Signing in...
+                    </span>
+                  ) : (
+                    "✦ SIGN IN"
+                  )}
+                </button>
+              </form>
+
+              <p className="mt-6 text-center text-xs text-gray-400">
+                Don&apos;t have an account?{" "}
+                <span className="text-gray-500">You need an invitation link to join.</span>
+              </p>
             </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-cream/60 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                placeholder="••••••••"
-                className="w-full bg-white/10 border border-cream/20 text-cream placeholder-cream/30 px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors rounded-sm"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-accent text-forest-deep font-semibold py-3.5 text-sm transition-all duration-300 hover:bg-accent-dark active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed rounded-sm"
-            >
-              {loading ? "Signing in..." : "Sign In"}
-            </button>
-          </form>
-
-          <p className="mt-6 text-center text-xs text-cream/40">
-            Don&apos;t have an account?{" "}
-            <span className="text-cream/60">
-              You need an invitation link to join.
-            </span>
-          </p>
+          )}
         </div>
       </div>
     </div>

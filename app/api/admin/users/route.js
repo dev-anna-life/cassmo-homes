@@ -29,5 +29,5 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json({ users });
+  return NextResponse.json({ users, count: users.length });
 }
