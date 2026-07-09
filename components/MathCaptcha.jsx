@@ -203,7 +203,7 @@ export default function VisualCaptcha({ onVerified }) {
             verified ? "text-green-600" : error ? "text-red-500" : "text-gray-400"
           }`}>
             {verified
-              ? "✓ Verified — you're human!"
+              ? "✓ Verified you're human!"
               : error
               ? "✗ Wrong — try the new code"
               : `Enter the ${LENGTH} characters shown`}
