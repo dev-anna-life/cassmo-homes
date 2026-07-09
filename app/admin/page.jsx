@@ -51,9 +51,31 @@ function EmptyState({ icon: Icon, message }) {
 }
 
 /* ══════════════════════════════════ SECTION: DASHBOARD ═══════════════════ */
-function DashboardSection({ users, dashData, loadingDash }) {
+function DashboardSection({ users, dashData, loadingDash, onRefresh }) {
   const members = users.filter((u) => u.role === "user");
   const counts = dashData?.counts || {};
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id, name }
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    setDeleteError("");
+    const res = await fetch("/api/admin/users/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: deleteTarget.id }),
+    });
+    const data = await res.json();
+    setDeleteLoading(false);
+    if (res.ok) {
+      setDeleteTarget(null);
+      onRefresh();
+    } else {
+      setDeleteError(data.error || "Failed to delete member.");
+    }
+  };
 
   const cards = [
     { label: "Registered Members", value: loadingDash ? "…" : `${members.length} Member(s)`, icon: Users, color: "bg-[#0B3D24]" },
@@ -65,6 +87,44 @@ function DashboardSection({ users, dashData, loadingDash }) {
 
   return (
     <div>
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-800">Delete Member?</h3>
+                <p className="text-xs text-gray-500">This action cannot be undone.</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 bg-gray-50 rounded p-3 mb-4">
+              You are about to permanently delete <strong>{deleteTarget.name}</strong> and all their data.
+            </p>
+            {deleteError && (
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-4">{deleteError}</p>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setDeleteTarget(null); setDeleteError(""); }}
+                className="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded font-semibold text-sm hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteLoading}
+                className="flex-1 bg-red-600 text-white py-2.5 rounded font-semibold text-sm hover:bg-red-700 disabled:opacity-60"
+              >
+                {deleteLoading ? "Deleting…" : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <SectionHeader title="Dashboard" subtitle="Overview of all activity on Cassmo Homes." />
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
         {cards.map((c) => (
@@ -86,7 +146,7 @@ function DashboardSection({ users, dashData, loadingDash }) {
           <h3 className="font-bold text-gray-800">Registered Members</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600 min-w-[500px]">
+          <table className="w-full text-left text-sm text-gray-600 min-w-[550px]">
             <thead className="border-b border-gray-200 bg-gray-50">
               <tr>
                 <th className="px-5 py-3 font-bold text-gray-700">No</th>
@@ -94,16 +154,32 @@ function DashboardSection({ users, dashData, loadingDash }) {
                 <th className="px-5 py-3 font-bold text-gray-700">Phone</th>
                 <th className="px-5 py-3 font-bold text-gray-700">Referred By</th>
                 <th className="px-5 py-3 font-bold text-gray-700">Joined</th>
+                <th className="px-5 py-3 font-bold text-gray-700">Action</th>
               </tr>
             </thead>
             <tbody>
               {members.slice(0, 10).map((u, i) => (
                 <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="px-5 py-3 text-gray-400">{i + 1}</td>
-                  <td className="px-5 py-3 font-medium text-gray-800">{u.name}</td>
+                  <td className="px-5 py-3 font-medium text-gray-800">
+                    <div>
+                      <div>{u.name}</div>
+                      {u.username && <div className="text-xs text-gray-400 font-mono">@{u.username}</div>}
+                    </div>
+                  </td>
                   <td className="px-5 py-3">{u.phone || ""}</td>
                   <td className="px-5 py-3">{u.referredBy?.name || <span className="text-gray-400 italic text-xs">Direct</span>}</td>
                   <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(u.createdAt)}</td>
+                  <td className="px-5 py-3">
+                    <button
+                      onClick={() => setDeleteTarget({ id: u.id, name: u.name })}
+                      title="Delete member"
+                      className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 border border-red-200 px-2.5 py-1.5 rounded transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -942,7 +1018,7 @@ function AdminDashboardContent() {
 
   const renderSection = () => {
     switch (section) {
-      case "dashboard":   return <DashboardSection users={users} dashData={dashData} loadingDash={loadingDash} />;
+      case "dashboard":   return <DashboardSection users={users} dashData={dashData} loadingDash={loadingDash} onRefresh={fetchAll} />;
       case "members":     return <MembersSection users={users} loading={loadingUsers} action={action} onRefresh={fetchAll} />;
       case "funding":     return <FundingSection data={dashData} onRefresh={fetchAll} />;
       case "commissions": return <CommissionsSection data={dashData} />;
@@ -951,7 +1027,7 @@ function AdminDashboardContent() {
       case "withdrawals": return <WithdrawalSection data={dashData} onRefresh={fetchAll} />;
       case "properties":  return <PropertiesSection data={dashData} onRefresh={fetchAll} />;
       case "extras":      return <ExtrasSection data={dashData} />;
-      default:            return <DashboardSection users={users} dashData={dashData} loadingDash={loadingDash} />;
+      default:            return <DashboardSection users={users} dashData={dashData} loadingDash={loadingDash} onRefresh={fetchAll} />;
     }
   };
 
