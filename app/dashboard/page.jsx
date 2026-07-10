@@ -73,10 +73,10 @@ export default function DashboardPage() {
           </Link>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex flex-col items-end">
-            <span className="text-sm text-white/70 hidden sm:block">{session.user.name}</span>
+          <div className="flex flex-col items-end text-right">
+            <span className="text-xs sm:text-sm text-white/70 font-semibold max-w-[120px] sm:max-w-none truncate">{session.user.name}</span>
             {session.user.username && (
-              <span className="text-xs text-white/40 hidden sm:block">@{session.user.username}</span>
+              <span className="text-[10px] sm:text-xs text-white/40 font-mono truncate max-w-[120px] sm:max-w-none">@{session.user.username}</span>
             )}
           </div>
           <button
@@ -114,13 +114,13 @@ export default function DashboardPage() {
 
           {/* Big Code Display */}
           <div className="bg-gray-50 border-2 border-dashed border-[#0B3D24]/30 rounded-lg p-6 text-center mb-4">
-            <div className="font-mono text-3xl font-bold text-[#0B3D24] tracking-widest mb-1">
+            <div className="font-mono text-xl sm:text-3xl font-bold text-[#0B3D24] tracking-normal sm:tracking-widest break-all mb-1">
               @{session.user.username || session.user.referralCode}
             </div>
             <p className="text-xs text-gray-400 mb-4">This is your personal invite username</p>
             <button
               onClick={copyCode}
-              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded font-semibold text-sm transition-all ${
+              className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded font-semibold text-sm transition-all w-full sm:w-auto ${
                 copied
                   ? "bg-green-500 text-white"
                   : "bg-[#0B3D24] text-white hover:bg-[#072c1a]"
@@ -137,12 +137,12 @@ export default function DashboardPage() {
           {/* Full Invite Link */}
           <div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Your Full Invite Link</p>
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2.5 mb-3">
-              <span className="flex-1 text-xs text-gray-600 truncate font-mono">
+            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2.5 mb-3 select-all break-all overflow-hidden">
+              <span className="flex-1 text-xs text-gray-600 font-mono break-all truncate">
                 {referralLink}
               </span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={copyLink}
                 className={`flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded font-semibold text-sm border transition-all ${
