@@ -35,7 +35,7 @@ export default function AboutPage() {
       {/* Mission */}
       <section className="section">
         <div className="container-c grid gap-12 md:grid-cols-2 md:items-center">
-          <Reveal>
+          <Reveal type="left" duration={0.8}>
             <div className="bracket-frame">
               <div className="img-zoom img-float relative aspect-[16/10] w-full overflow-hidden">
                 <Image
@@ -48,7 +48,7 @@ export default function AboutPage() {
               </div>
             </div>
           </Reveal>
-          <Reveal delay={80}>
+          <Reveal delay={80} type="right" duration={0.8}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent-dark">Our Mission</p>
             <p className="mt-5 font-display text-2xl leading-snug text-forest sm:text-[1.65rem]">
               Our mission is simple: help you find and secure genuine land,
@@ -67,7 +67,7 @@ export default function AboutPage() {
       {/* Vision */}
       <section className="bg-forest text-cream section">
         <div className="container-c grid gap-12 md:grid-cols-2 md:items-center">
-          <Reveal className="md:order-2">
+          <Reveal className="md:order-2" type="right" duration={0.8}>
             <div className="bracket-frame">
               <div className="img-zoom img-float relative aspect-[16/10] w-full overflow-hidden">
                 <Image
@@ -80,7 +80,7 @@ export default function AboutPage() {
               </div>
             </div>
           </Reveal>
-          <Reveal delay={80} className="md:order-1">
+          <Reveal delay={80} className="md:order-1" type="left" duration={0.8}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">Our Vision</p>
             <p className="mt-5 font-display text-3xl leading-snug sm:text-4xl">
               To create spaces where people can actually live well.
@@ -97,7 +97,7 @@ export default function AboutPage() {
       {/* Values */}
       <section className="section">
         <div className="container-c">
-          <Reveal className="max-w-2xl">
+          <Reveal className="max-w-2xl" type="up" duration={0.8}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent-dark">What we stand for</p>
             <h2 className="mt-4 font-display text-3xl font-semibold text-forest sm:text-4xl">
               The ground we build on.
@@ -105,7 +105,12 @@ export default function AboutPage() {
           </Reveal>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {values.map((v, i) => (
-              <Reveal key={v.title} delay={i * 90} type="scale">
+              <Reveal
+                key={v.title}
+                delay={i * 90}
+                type={i === 0 ? "left" : i === 1 ? "up" : "right"}
+                duration={0.8}
+              >
                 <div className="card-lift h-full border-t-2 border-accent bg-white p-7">
                   <h3 className="font-display text-xl font-semibold text-forest">
                     {v.title}

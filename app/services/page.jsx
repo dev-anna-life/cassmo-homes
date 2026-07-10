@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import Reveal from "@/components/Reveal";
 import PageHeader from "@/components/PageHeader";
@@ -24,7 +24,11 @@ export default function ServicesPage() {
       <section className="section">
         <div className="container-c space-y-6">
           {services.map((s, i) => (
-            <Reveal key={s.slug}>
+            <Reveal
+              key={s.slug}
+              type={i === 0 ? "left" : i === 1 ? "scale" : "right"}
+              duration={0.8}
+            >
               <article className="card-lift grid gap-8 border border-ink/10 bg-white p-7 md:grid-cols-[auto_1fr_auto] md:items-center md:p-9">
                 <div className="font-display text-5xl font-semibold text-accent">
                   0{i + 1}
@@ -60,7 +64,7 @@ export default function ServicesPage() {
       {/* Capabilities */}
       <section className="bg-white section">
         <div className="container-c grid gap-12 md:grid-cols-2 md:items-center">
-          <Reveal>
+          <Reveal type="left" duration={0.8}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent-dark">
               Full capability
             </p>
@@ -84,7 +88,7 @@ export default function ServicesPage() {
               ))}
             </ul>
           </Reveal>
-          <Reveal delay={80} type="right">
+          <Reveal delay={80} type="right" duration={0.8}>
             <div className="bracket-frame">
               <div className="img-zoom img-float relative aspect-[4/5] w-full overflow-hidden">
                 <Image

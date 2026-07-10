@@ -19,6 +19,8 @@ export const metadata = {
   ],
 };
 
+import PageTransition from "@/components/PageTransition";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -27,7 +29,9 @@ export default function RootLayout({ children }) {
           <SmoothScroll>
             <ScrollProgress />
             <Navbar />
-            <main>{children}</main>
+            <main>
+              <PageTransition>{children}</PageTransition>
+            </main>
             <WhatsAppButton />
             <Footer />
           </SmoothScroll>

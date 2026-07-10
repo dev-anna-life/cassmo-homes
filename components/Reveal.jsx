@@ -1,14 +1,14 @@
-﻿"use client";
+"use client";
 
 import { motion } from "framer-motion";
 
 const VARIANTS = {
-  up:    { hidden: { opacity: 0, y: 32 },        visible: { opacity: 1, y: 0 } },
-  down:  { hidden: { opacity: 0, y: -24 },       visible: { opacity: 1, y: 0 } },
-  left:  { hidden: { opacity: 0, x: -28 },       visible: { opacity: 1, x: 0 } },
-  right: { hidden: { opacity: 0, x: 28 },        visible: { opacity: 1, x: 0 } },
-  scale: { hidden: { opacity: 0, scale: 0.92 },  visible: { opacity: 1, scale: 1 } },
-  flip:  { hidden: { opacity: 0, rotateX: 22 },  visible: { opacity: 1, rotateX: 0 } },
+  up:    { hidden: { opacity: 0, y: 50 },        visible: { opacity: 1, y: 0 } },
+  down:  { hidden: { opacity: 0, y: -40 },       visible: { opacity: 1, y: 0 } },
+  left:  { hidden: { opacity: 0, x: -80 },       visible: { opacity: 1, x: 0 } },
+  right: { hidden: { opacity: 0, x: 80 },        visible: { opacity: 1, x: 0 } },
+  scale: { hidden: { opacity: 0, scale: 0.90 },  visible: { opacity: 1, scale: 1 } },
+  flip:  { hidden: { opacity: 0, rotateX: 25 },  visible: { opacity: 1, rotateX: 0 } },
   fade:  { hidden: { opacity: 0 },               visible: { opacity: 1 } },
 };
 
