@@ -17,6 +17,7 @@ export async function POST(request) {
       email,
       password,
       phone,
+      address,
       refCode,
       bankName,
       accountNumber,
@@ -27,6 +28,22 @@ export async function POST(request) {
     if (!name || !username || !email || !password) {
       return NextResponse.json(
         { error: "Full name, username, email and password are required." },
+        { status: 400 }
+      );
+    }
+
+    // Validate phone is provided
+    if (!phone || !phone.trim()) {
+      return NextResponse.json(
+        { error: "Phone number is required." },
+        { status: 400 }
+      );
+    }
+
+    // Validate address is provided
+    if (!address || !address.trim()) {
+      return NextResponse.json(
+        { error: "Address is required." },
         { status: 400 }
       );
     }
@@ -112,7 +129,8 @@ export async function POST(request) {
         username: usernameClean,
         email: email.toLowerCase().trim(),
         password: hashedPassword,
-        phone: phone?.trim() || null,
+        phone: phone.trim(),
+        address: address.trim(),
         referralCode: newRefCode,
         referredById: referrer.id,
         role: "user",

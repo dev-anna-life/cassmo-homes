@@ -18,6 +18,7 @@ function SignupForm() {
     email: "",
     password: "",
     phone: "",
+    address: "",
     refCode: refFromUrl,
     bankName: "",
     accountNumber: "",
@@ -92,6 +93,7 @@ function SignupForm() {
           email: form.email,
           password: form.password,
           phone: form.phone,
+          address: form.address,
           // Always send the actual referral code (not username) to the backend
           refCode: referrer.referralCode,
           bankName: form.bankName,
@@ -255,14 +257,30 @@ function SignupForm() {
                 {/* Phone */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                    Phone Number <span className="text-gray-400 font-normal normal-case">(optional)</span>
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
+                    required
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
                     placeholder="e.g. 08012345678"
                     className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50"
+                  />
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                    Address <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    required
+                    rows={2}
+                    value={form.address}
+                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    placeholder="Enter your residential address"
+                    className="w-full border border-gray-300 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] transition-colors rounded bg-gray-50 resize-none"
                   />
                 </div>
 
