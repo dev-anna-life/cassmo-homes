@@ -59,7 +59,7 @@ function ResetPasswordForm() {
     <div
       className="min-h-screen flex items-center justify-center relative px-4 py-12"
       style={{
-        backgroundImage: "linear-gradient(rgba(11, 61, 36, 0.75), rgba(0, 0, 0, 0.85)), url('/images/car-dark.png')",
+        backgroundImage: "linear-gradient(rgba(11, 61, 36, 0.65), rgba(0, 0, 0, 0.8)), url('/images/flyer-freedom.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",

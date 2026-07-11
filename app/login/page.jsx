@@ -65,7 +65,7 @@ function LoginForm() {
     <div
       className="min-h-screen flex items-center justify-center relative px-4 py-12"
       style={{
-        backgroundImage: "linear-gradient(rgba(11, 61, 36, 0.75), rgba(0, 0, 0, 0.85)), url('/images/car-dark.png')",
+        backgroundImage: "linear-gradient(rgba(11, 61, 36, 0.65), rgba(0, 0, 0, 0.8)), url('/images/flyer-freedom.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -81,9 +81,9 @@ function LoginForm() {
       <div className="w-full max-w-md relative z-10">
         {/* Success Modal */}
         {success && (
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-10 text-center border border-white/20">
+          <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl p-10 text-center border border-white/30">
             <div className="flex items-center justify-center mb-6">
-              <div className="w-20 h-20 rounded-full border-4 border-green-200 flex items-center justify-center bg-green-50">
+              <div className="w-20 h-20 rounded-full border-4 border-green-200 flex items-center justify-center bg-green-50/50">
                 <CheckCircle className="w-12 h-12 text-green-500" strokeWidth={1.5} />
               </div>
             </div>
@@ -112,7 +112,7 @@ function LoginForm() {
 
         {/* Login Form Container */}
         {!success && (
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/30">
+          <div className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/40">
             {/* Logo */}
             <div className="mb-6 text-center">
               <Link href="/">

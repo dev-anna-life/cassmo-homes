@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { RefreshCw, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 const CHARS = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no o, O, 0, i, I, l, 1 (confusing)
 const LENGTH = 6;
@@ -151,15 +151,6 @@ export default function VisualCaptcha({ onVerified }) {
           <ShieldCheck className="w-3.5 h-3.5 text-[#0B3D24]" />
           Security Check
         </span>
-        <button
-          type="button"
-          onClick={refresh}
-          className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#0B3D24] transition-colors"
-          title="Refresh code"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          New code
-        </button>
       </div>
 
       {/* Canvas */}
