@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense } from "react";
 import { signIn, getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Shield } from "lucide-react";
 import MathCaptcha from "@/components/MathCaptcha";
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [form, setForm] = useState({ identifier: "", password: "" });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,10 @@ export default function AdminLoginPage() {
         setError("Access denied. Admin accounts only.");
         return;
       }
-      router.push("/admin");
+      
+      // Redirect to the callbackUrl search param if it exists, otherwise /admin
+      const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+      router.push(callbackUrl);
       router.refresh();
     }
   };
@@ -157,5 +161,17 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="h-8 w-8 border-4 border-[#0B3D24] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <AdminLoginForm />
+    </Suspense>
   );
 }
