@@ -72,12 +72,14 @@ export async function POST(request) {
       );
     }
 
-    // Find the referrer by username OR referral code
+    // Find the referrer by username, referral code, or member number
+    const memberNum = parseInt(refCode, 10);
     const referrer = await prisma.user.findFirst({
       where: {
         OR: [
           { username: refCode.toLowerCase() },
           { referralCode: refCode.toUpperCase() },
+          ...(!isNaN(memberNum) ? [{ memberNumber: memberNum }] : []),
         ],
       },
     });

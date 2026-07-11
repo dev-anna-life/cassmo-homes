@@ -3,8 +3,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/auth/referrer?ref=1  (member number)
-// Also accepts referral code as fallback
+// GET /api/auth/referrer?ref=admin (username) or ?ref=1 (member number) or ?ref=YOKAV6S2 (referral code)
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -16,7 +15,7 @@ export async function GET(request) {
 
     let referrer = null;
 
-    // Try by member number first (if ref is a number)
+    // 1. Try by member number first (if ref is a number)
     const memberNum = parseInt(ref, 10);
     if (!isNaN(memberNum) && String(memberNum) === ref) {
       referrer = await prisma.user.findUnique({
@@ -30,7 +29,20 @@ export async function GET(request) {
       });
     }
 
-    // Fallback: try by referral code
+    // 2. Try by username (case-insensitive)
+    if (!referrer) {
+      referrer = await prisma.user.findFirst({
+        where: { username: ref.toLowerCase() },
+        select: {
+          name: true,
+          username: true,
+          referralCode: true,
+          memberNumber: true,
+        },
+      });
+    }
+
+    // 3. Fallback: try by referral code (case-insensitive)
     if (!referrer) {
       referrer = await prisma.user.findFirst({
         where: { referralCode: ref.toUpperCase() },
