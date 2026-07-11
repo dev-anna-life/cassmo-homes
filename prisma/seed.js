@@ -11,16 +11,9 @@ function generateCode(length = 8) {
 }
 
 async function main() {
-  // Only create the admin account — never create fake test users
-  let admin = await prisma.user.findUnique({
-    where: { email: "admin@cassmohomes.com" },
-  });
-
-  if (admin) {
-    console.log("✅ Admin already exists:", admin.email);
-    console.log("🔗 Admin referral code:", admin.referralCode);
-    return;
-  }
+  console.log("🗑️  Wiping all existing users...");
+  await prisma.user.deleteMany({});
+  console.log("✅ All users deleted.");
 
   const hashedPassword = await bcrypt.hash("CassmoAdmin2024!", 12);
   let referralCode;
@@ -28,7 +21,7 @@ async function main() {
     referralCode = generateCode();
   } while (await prisma.user.findUnique({ where: { referralCode } }));
 
-  admin = await prisma.user.create({
+  const admin = await prisma.user.create({
     data: {
       name: "Adah John",
       username: "admin",
@@ -37,13 +30,16 @@ async function main() {
       phone: "+2349025737611",
       referralCode,
       role: "admin",
+      memberNumber: null, // admin has no member number
     },
   });
 
-  console.log("✅ Admin account created!");
+  console.log("✅ Fresh admin account created!");
   console.log("📧 Email:", admin.email);
+  console.log("👤 Username: admin");
   console.log("🔑 Password: CassmoAdmin2024!");
   console.log("🔗 Referral Code:", admin.referralCode);
+  console.log("ℹ️  Admin has no member number — first signup will be Member #1");
 }
 
 main()

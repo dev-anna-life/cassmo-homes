@@ -123,6 +123,14 @@ export async function POST(request) {
       newRefCode = generateCode();
     }
 
+    // Assign the next sequential member number
+    const maxMember = await prisma.user.findFirst({
+      where: { memberNumber: { not: null } },
+      orderBy: { memberNumber: "desc" },
+      select: { memberNumber: true },
+    });
+    const nextMemberNumber = (maxMember?.memberNumber ?? 0) + 1;
+
     const user = await prisma.user.create({
       data: {
         name: name.trim(),
@@ -131,6 +139,7 @@ export async function POST(request) {
         password: hashedPassword,
         phone: phone.trim(),
         address: address.trim(),
+        memberNumber: nextMemberNumber,
         referralCode: newRefCode,
         referredById: referrer.id,
         role: "user",

@@ -172,7 +172,16 @@ function LoginForm() {
                 </button>
               </form>
 
-              <p className="mt-6 text-center text-xs text-gray-400">
+              <p className="mt-4 text-center text-xs text-gray-400">
+                <a
+                  href="/forgot-password"
+                  className="text-[#0B3D24] font-semibold hover:underline"
+                >
+                  Forgot your password?
+                </a>
+              </p>
+
+              <p className="mt-2 text-center text-xs text-gray-400">
                 Don&apos;t have an account?{" "}
                 <span className="text-gray-500">You need an invitation link to join.</span>
               </p>

@@ -29,12 +29,12 @@ export default function DashboardPage() {
   }
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app";
-  // Use username in invite links — more personal and readable
-  const refSlug = session.user.username || session.user.referralCode;
-  const referralLink = `${origin}/signup?ref=${refSlug}`;
+  // Use member number in invite links
+  const memberNum = session.user.memberNumber;
+  const referralLink = `${origin}/signup?ref=${memberNum}`;
 
   const copyCode = () => {
-    navigator.clipboard.writeText(session.user.referralCode);
+    navigator.clipboard.writeText(String(memberNum));
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -49,7 +49,7 @@ export default function DashboardPage() {
     if (navigator.share) {
       navigator.share({
         title: "Join Cassmo Homes",
-        text: `I'd like to invite you to join Cassmo Homes real estate network. Use my referral link to sign up! (Referred by: ${session.user.name})`,
+        text: `I'd like to invite you to join Cassmo Homes real estate network. Use my referral link to sign up! (Referred by: Member #${memberNum})`,
         url: referralLink,
       });
     } else {
@@ -115,9 +115,9 @@ export default function DashboardPage() {
           {/* Big Code Display */}
           <div className="bg-gray-50 border-2 border-dashed border-[#0B3D24]/30 rounded-lg p-6 text-center mb-4">
             <div className="font-mono text-xl sm:text-3xl font-bold text-[#0B3D24] tracking-normal sm:tracking-widest break-all mb-1">
-              @{session.user.username || session.user.referralCode}
+              Member #{memberNum}
             </div>
-            <p className="text-xs text-gray-400 mb-4">This is your personal invite username</p>
+            <p className="text-xs text-gray-400 mb-4">This is your personal member number</p>
             <button
               onClick={copyCode}
               className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded font-semibold text-sm transition-all w-full sm:w-auto ${

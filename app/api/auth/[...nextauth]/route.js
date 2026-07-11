@@ -42,6 +42,7 @@ export const authOptions = {
           role: user.role,
           referralCode: user.referralCode,
           username: user.username,
+          memberNumber: user.memberNumber,
         };
       },
     }),
@@ -53,6 +54,7 @@ export const authOptions = {
         token.role = user.role;
         token.referralCode = user.referralCode;
         token.username = user.username;
+        token.memberNumber = user.memberNumber;
       }
       return token;
     },
@@ -62,6 +64,7 @@ export const authOptions = {
         session.user.role = token.role;
         session.user.referralCode = token.referralCode;
         session.user.username = token.username;
+        session.user.memberNumber = token.memberNumber;
       }
       return session;
     },

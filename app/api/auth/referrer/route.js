@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/auth/referrer?ref=USERNAME_OR_REFCODE
-// Accepts: @username (e.g. "annastesia") or a referral code (e.g. "98VTQF6C")
+// GET /api/auth/referrer?ref=1  (member number)
+// Also accepts referral code as fallback
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -14,29 +14,44 @@ export async function GET(request) {
       return NextResponse.json({ error: "No ref provided" }, { status: 400 });
     }
 
-    // Try by username first (case-insensitive), then by referral code
-    const referrer = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { username: ref.toLowerCase() },
-          { referralCode: ref.toUpperCase() },
-        ],
-      },
-      select: {
-        name: true,
-        username: true,
-        referralCode: true,
-      },
-    });
+    let referrer = null;
+
+    // Try by member number first (if ref is a number)
+    const memberNum = parseInt(ref, 10);
+    if (!isNaN(memberNum) && String(memberNum) === ref) {
+      referrer = await prisma.user.findUnique({
+        where: { memberNumber: memberNum },
+        select: {
+          name: true,
+          username: true,
+          referralCode: true,
+          memberNumber: true,
+        },
+      });
+    }
+
+    // Fallback: try by referral code
+    if (!referrer) {
+      referrer = await prisma.user.findFirst({
+        where: { referralCode: ref.toUpperCase() },
+        select: {
+          name: true,
+          username: true,
+          referralCode: true,
+          memberNumber: true,
+        },
+      });
+    }
 
     if (!referrer) {
-      return NextResponse.json({ error: "Invalid referral code or username" }, { status: 404 });
+      return NextResponse.json({ error: "Invalid referral link" }, { status: 404 });
     }
 
     return NextResponse.json({
       name: referrer.name,
       username: referrer.username,
       referralCode: referrer.referralCode,
+      memberNumber: referrer.memberNumber,
     });
   } catch (err) {
     console.error("Referrer lookup error:", err);
