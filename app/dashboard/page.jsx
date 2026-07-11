@@ -29,12 +29,12 @@ export default function DashboardPage() {
   }
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app";
-  // Use member number in invite links
-  const memberNum = session.user.memberNumber;
-  const referralLink = `${origin}/signup?ref=${memberNum}`;
+  // Use referral code as path-based invite link e.g. /20367
+  const refCode = session.user.referralCode;
+  const referralLink = `${origin}/${refCode}`;
 
   const copyCode = () => {
-    navigator.clipboard.writeText(String(memberNum));
+    navigator.clipboard.writeText(String(refCode));
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -49,7 +49,7 @@ export default function DashboardPage() {
     if (navigator.share) {
       navigator.share({
         title: "Join Cassmo Homes",
-        text: `I'd like to invite you to join Cassmo Homes real estate network. Use my referral link to sign up! (Referred by: Member #${memberNum})`,
+        text: `I'd like to invite you to join Cassmo Homes real estate network. Use my referral link to sign up! (Code: ${refCode})`,
         url: referralLink,
       });
     } else {
@@ -115,9 +115,9 @@ export default function DashboardPage() {
           {/* Big Code Display */}
           <div className="bg-gray-50 border-2 border-dashed border-[#0B3D24]/30 rounded-lg p-6 text-center mb-4">
             <div className="font-mono text-xl sm:text-3xl font-bold text-[#0B3D24] tracking-normal sm:tracking-widest break-all mb-1">
-              Member #{memberNum}
+              {refCode}
             </div>
-            <p className="text-xs text-gray-400 mb-4">This is your personal member number</p>
+            <p className="text-xs text-gray-400 mb-4">This is your personal referral code</p>
             <button
               onClick={copyCode}
               className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded font-semibold text-sm transition-all w-full sm:w-auto ${

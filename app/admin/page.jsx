@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Users, Home, ChevronRight, Key, ShieldAlert, X, Plus, Trash2,
   CheckCircle, XCircle, Building2, Banknote, PiggyBank, BarChart3,
@@ -54,29 +55,7 @@ function EmptyState({ icon: Icon, message }) {
 function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) {
   const members = users.filter((u) => u.role === "user");
   const counts = dashData?.counts || {};
-  const [deleteTarget, setDeleteTarget] = useState(null); // { id, name }
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
   const [copied, setCopied] = useState(false);
-
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setDeleteLoading(true);
-    setDeleteError("");
-    const res = await fetch("/api/admin/users/delete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: deleteTarget.id }),
-    });
-    const data = await res.json();
-    setDeleteLoading(false);
-    if (res.ok) {
-      setDeleteTarget(null);
-      onRefresh();
-    } else {
-      setDeleteError(data.error || "Failed to delete member.");
-    }
-  };
 
   const copyInvite = () => {
     if (!session?.user?.username && !session?.user?.referralCode) return;
@@ -89,7 +68,7 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
   };
 
   const cards = [
-    { label: "Registered Members", value: loadingDash ? "…" : `${members.length} Member(s)`, icon: Users, color: "bg-[#0B3D24]" },
+    { label: "Members", value: loadingDash ? "…" : `${members.length} Member(s)`, icon: Users, color: "bg-[#0B3D24]" },
     { label: "Total Withdrawn", value: loadingDash ? "…" : fmt(counts.totalWithdrawn), icon: Banknote, color: "bg-red-500" },
     { label: "Pending Withdrawal", value: loadingDash ? "…" : fmt(counts.pendingWithdrawals), icon: PiggyBank, color: "bg-gray-800" },
     { label: "Pending Funding", value: loadingDash ? "…" : fmt(counts.pendingFunding), icon: CreditCard, color: "bg-blue-600" },
@@ -98,71 +77,30 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
 
   return (
     <div>
-      {/* Delete Confirmation Modal */}
-      {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Trash2 className="w-5 h-5 text-red-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800">Delete Member?</h3>
-                <p className="text-xs text-gray-500">This action cannot be undone.</p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600 bg-gray-50 rounded p-3 mb-4">
-              You are about to permanently delete <strong>{deleteTarget.name}</strong> and all their data.
-            </p>
-            {deleteError && (
-              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-4">{deleteError}</p>
-            )}
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setDeleteTarget(null); setDeleteError(""); }}
-                className="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded font-semibold text-sm hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleteLoading}
-                className="flex-1 bg-red-600 text-white py-2.5 rounded font-semibold text-sm hover:bg-red-700 disabled:opacity-60"
-              >
-                {deleteLoading ? "Deleting…" : "Yes, Delete"}
-              </button>
-            </div>
+      {/* Welcome Banner */}
+      <div className="bg-[#0B3D24] text-white rounded shadow p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-xl font-bold">Welcome back, {session?.user?.name || "Admin"}! 👋</h1>
+          <p className="text-sm text-white/70 mt-1">Manage network members, sales commissions, and system configs here.</p>
+        </div>
+        <div className="flex flex-col items-start gap-1">
+          <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">Default Registration Link</span>
+          <div className="mt-2 text-xs font-mono text-gray-600 bg-gray-50 border border-gray-200 rounded px-3 py-2 select-all break-all max-w-xl">
+            {`${typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app"}/signup?ref=${session.user.username || session.user.referralCode}`}
+          </div>
+          <div className="mt-1 text-xs text-gray-400">
+            Your username: <span className="font-bold text-gray-700 font-mono">@{session.user.username}</span>
           </div>
         </div>
-      )}
-
-      <SectionHeader title="Dashboard" subtitle="Overview of all activity on Cassmo Homes." />
-
-      {/* Admin Referral Link Banner */}
-      {(session?.user?.username || session?.user?.referralCode) && (
-        <div className="bg-white rounded shadow p-5 border-l-4 border-[#0B3D24] mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h3 className="font-bold text-gray-800 text-sm">Your Referral Invite Link</h3>
-            <p className="text-xs text-gray-500 mt-1">
-              Share this personalised link to register new members under your network.
-            </p>
-            <div className="mt-2 text-xs font-mono text-gray-600 bg-gray-50 border border-gray-200 rounded px-3 py-2 select-all break-all max-w-xl">
-              {`${typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app"}/signup?ref=${session.user.username || session.user.referralCode}`}
-            </div>
-            <div className="mt-1 text-xs text-gray-400">
-              Your username: <span className="font-bold text-gray-700 font-mono">@{session.user.username}</span>
-            </div>
-          </div>
-          <button
-            onClick={copyInvite}
-            className={`sm:self-center px-5 py-2.5 rounded font-semibold text-xs transition-colors self-start whitespace-nowrap ${
-              copied ? "bg-green-600 text-white" : "bg-[#0B3D24] hover:bg-[#072c1a] text-white"
-            }`}
-          >
-            {copied ? "✓ Copied Link" : "Copy Invite Link"}
-          </button>
-        </div>
-      )}
+        <button
+          onClick={copyInvite}
+          className={`sm:self-center px-5 py-2.5 rounded font-semibold text-xs transition-colors self-start whitespace-nowrap ${
+            copied ? "bg-green-600 text-white" : "bg-[#0B3D24] hover:bg-[#072c1a] text-white"
+          }`}
+        >
+          {copied ? "✓ Copied Link" : "Copy Invite Link"}
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
         {cards.map((c) => (
@@ -181,7 +119,7 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
       {/* Recent Members Table */}
       <div className="bg-white rounded shadow">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-bold text-gray-800">Registered Members</h3>
+          <h3 className="font-bold text-gray-800">Members</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600 min-w-[550px]">
@@ -209,14 +147,12 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
                   <td className="px-5 py-3">{u.referredBy?.name || <span className="text-gray-400 italic text-xs">Direct</span>}</td>
                   <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(u.createdAt)}</td>
                   <td className="px-5 py-3">
-                    <button
-                      onClick={() => setDeleteTarget({ id: u.id, name: u.name })}
-                      title="Delete member"
-                      className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 border border-red-200 px-2.5 py-1.5 rounded transition-colors"
+                    <Link
+                      href={`/admin/members/${u.id}`}
+                      className="inline-flex items-center gap-1.5 text-xs text-white bg-[#0B3D24] hover:bg-[#072c1a] px-3 py-1.5 rounded transition-colors font-semibold"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      Delete
-                    </button>
+                      View Profile
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -230,7 +166,6 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
 
 /* ══════════════════════════════════ SECTION: MEMBERS ═════════════════════ */
 function MembersSection({ users, loading, action, onRefresh }) {
-  const [expandedUsers, setExpandedUsers] = useState({});
   const [selectedUser, setSelectedUser] = useState("");
   const [newRole, setNewRole] = useState("user");
   const [newPassword, setNewPassword] = useState("");
@@ -238,33 +173,13 @@ function MembersSection({ users, loading, action, onRefresh }) {
   const [modalMessage, setModalMessage] = useState("");
   const [modalError, setModalError] = useState("");
   const [newMember, setNewMember] = useState({ name: "", email: "", password: "", phone: "" });
-  const [deleteTarget, setDeleteTarget] = useState(null); // { id, name }
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
+
+  const [expandedUsers, setExpandedUsers] = useState({});
+  const members = users.filter((u) => u.role !== "admin");
 
   const toggleExpand = (id) =>
     setExpandedUsers((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const members = users.filter((u) => u.role !== "admin");
-
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setDeleteLoading(true);
-    setDeleteError("");
-    const res = await fetch("/api/admin/users/delete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: deleteTarget.id }),
-    });
-    const data = await res.json();
-    setDeleteLoading(false);
-    if (res.ok) {
-      setDeleteTarget(null);
-      onRefresh();
-    } else {
-      setDeleteError(data.error || "Failed to delete member.");
-    }
-  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -376,45 +291,8 @@ function MembersSection({ users, loading, action, onRefresh }) {
   // Default — view all members
   return (
     <div>
-      {/* Delete Confirmation Modal */}
-      {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Trash2 className="w-5 h-5 text-red-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800">Delete Member?</h3>
-                <p className="text-xs text-gray-500">This action cannot be undone.</p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600 bg-gray-50 rounded p-3 mb-4">
-              You are about to permanently delete <strong>{deleteTarget.name}</strong> and all their data (wallet, transactions, etc.).
-            </p>
-            {deleteError && (
-              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-4">{deleteError}</p>
-            )}
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setDeleteTarget(null); setDeleteError(""); }}
-                className="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded font-semibold text-sm hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleteLoading}
-                className="flex-1 bg-red-600 text-white py-2.5 rounded font-semibold text-sm hover:bg-red-700 disabled:opacity-60"
-              >
-                {deleteLoading ? "Deleting…" : "Yes, Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SectionHeader title="All Members" subtitle={`${members.length} member(s) in the network.`} />
 
-      <SectionHeader title="All Members" subtitle={`${members.length} registered member(s) in the network.`} />
       <div className="bg-white rounded shadow overflow-x-auto">
         <table className="w-full text-left text-sm text-gray-600 min-w-[640px]">
           <thead className="bg-gray-50 border-b border-gray-200">
@@ -461,14 +339,12 @@ function MembersSection({ users, loading, action, onRefresh }) {
                     </td>
                     <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(u.createdAt)}</td>
                     <td className="px-5 py-3">
-                      <button
-                        onClick={() => setDeleteTarget({ id: u.id, name: u.name })}
-                        title="Delete member"
-                        className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 border border-red-200 px-2.5 py-1.5 rounded transition-colors"
+                      <Link
+                        href={`/admin/members/${u.id}`}
+                        className="flex items-center gap-1.5 text-xs text-white bg-[#0B3D24] hover:bg-[#072c1a] px-3 py-1.5 rounded transition-colors font-semibold"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        Delete
-                      </button>
+                        View Profile
+                      </Link>
                     </td>
                   </tr>
                   {expandedUsers[u.id] && u.referredUsers?.length > 0 && (

@@ -2,11 +2,9 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
-function generateCode(length = 8) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  return Array.from({ length }, () =>
-    chars.charAt(Math.floor(Math.random() * chars.length))
-  ).join("");
+function generateCode() {
+  // 5-digit numeric referral code e.g. 20367
+  return String(Math.floor(10000 + Math.random() * 90000));
 }
 
 export async function POST(request) {

@@ -4,11 +4,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
-function generateCode(length = 8) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  return Array.from({ length }, () =>
-    chars.charAt(Math.floor(Math.random() * chars.length))
-  ).join("");
+function generateCode() {
+  // 5-digit numeric referral code e.g. 20367
+  return String(Math.floor(10000 + Math.random() * 90000));
 }
 
 export async function POST(req) {

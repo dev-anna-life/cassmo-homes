@@ -122,7 +122,7 @@ function SignupForm() {
     <div
       className="min-h-screen flex items-center justify-center relative px-4 py-8"
       style={{
-        backgroundImage: "linear-gradient(rgba(11, 61, 36, 0.75), rgba(0, 0, 0, 0.85)), url('/images/house-dusk.png')",
+        backgroundImage: "linear-gradient(rgba(11, 61, 36, 0.75), rgba(0, 0, 0, 0.85)), url('/images/car-dark.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -178,51 +178,6 @@ function SignupForm() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Referral Code / Username */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
-                  Referral Code or Username <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={form.refCode}
-                  onChange={(e) => setForm({ ...form, refCode: e.target.value })}
-                  placeholder="e.g. 1 or code"
-                  className="w-full border border-gray-300 text-gray-800 placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] focus:ring-1 focus:ring-[#0B3D24] transition-all rounded-lg bg-white/70 font-mono tracking-widest"
-                />
-                {/* Referrer banner */}
-                {referrer && (
-                  <div className="mt-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-[#0B3D24] rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                      #{referrer.memberNumber ?? "A"}
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-green-800">
-                        Referred by: {referrer.memberNumber ? `Member #${referrer.memberNumber}` : "Admin"}
-                      </p>
-                    </div>
-                    <span className="ml-auto text-green-500 text-xs font-bold">✓ Valid</span>
-                  </div>
-                )}
-                {refError && <p className="text-xs text-red-500 mt-1 font-semibold">{refError}</p>}
-              </div>
-
-              {/* Full Name */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
-                  Full Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Enter your full name"
-                  className="w-full border border-gray-300 text-gray-800 placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] focus:ring-1 focus:ring-[#0B3D24] transition-all rounded-lg bg-white/70"
-                />
-              </div>
-
               {/* Username */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
@@ -242,6 +197,36 @@ function SignupForm() {
                   />
                 </div>
                 <p className="text-[10px] text-gray-500 mt-1">Lowercase letters, numbers and underscores only</p>
+              </div>
+
+              {/* Referral Code */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
+                  Referral Code <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={form.refCode}
+                  onChange={(e) => setForm({ ...form, refCode: e.target.value })}
+                  placeholder="e.g. 20367"
+                  className="w-full border border-gray-300 text-gray-800 placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] focus:ring-1 focus:ring-[#0B3D24] transition-all rounded-lg bg-white/70 font-mono tracking-widest"
+                />
+                {/* Referrer banner */}
+                {referrer && (
+                  <div className="mt-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
+                    <div className="w-8 h-8 bg-[#0B3D24] rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      #{referrer.memberNumber ?? "A"}
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-green-800">
+                        Referred by: {referrer.memberNumber ? `Member #${referrer.memberNumber}` : "Admin"}
+                      </p>
+                    </div>
+                    <span className="ml-auto text-green-500 text-xs font-bold">✓ Valid</span>
+                  </div>
+                )}
+                {refError && <p className="text-xs text-red-500 mt-1 font-semibold">{refError}</p>}
               </div>
 
               {/* Email */}

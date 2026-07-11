@@ -65,7 +65,7 @@ function LoginForm() {
     <div
       className="min-h-screen flex items-center justify-center relative px-4 py-12"
       style={{
-        backgroundImage: "linear-gradient(rgba(11, 61, 36, 0.75), rgba(0, 0, 0, 0.85)), url('/images/house-dusk.png')",
+        backgroundImage: "linear-gradient(rgba(11, 61, 36, 0.75), rgba(0, 0, 0, 0.85)), url('/images/car-dark.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",

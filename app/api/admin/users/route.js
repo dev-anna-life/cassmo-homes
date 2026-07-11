@@ -15,16 +15,22 @@ export async function GET() {
     select: {
       id: true,
       name: true,
+      username: true,
       email: true,
       phone: true,
+      address: true,
+      memberNumber: true,
       referralCode: true,
       role: true,
       createdAt: true,
+      bankName: true,
+      accountNumber: true,
+      accountName: true,
       referredBy: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, username: true, memberNumber: true },
       },
       referredUsers: {
-        select: { id: true, name: true, email: true, createdAt: true },
+        select: { id: true, name: true, username: true, email: true, phone: true, memberNumber: true, createdAt: true },
       },
     },
   });
