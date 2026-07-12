@@ -181,8 +181,8 @@ export default function MemberProfilePage() {
           <div className="flex flex-col gap-1 text-right text-xs text-gray-400">
             {member.referralCode && (
               <span>
-                Referral Code:{" "}
-                <strong className="font-mono text-gray-700">{member.referralCode}</strong>
+                Invite Link:{" "}
+                <strong className="font-mono text-gray-700">/{member.username}</strong>
               </span>
             )}
             <span>
@@ -228,7 +228,7 @@ export default function MemberProfilePage() {
                   <DetailRow label="Address" value={member.address} />
                   <DetailRow label="Referred By" value={referredByName} />
                   <DetailRow label="Member #" value={member.memberNumber ? `#${member.memberNumber}` : undefined} />
-                  <DetailRow label="Referral Code" value={member.referralCode} mono />
+                  <DetailRow label="Invite Username" value={member.username ? `/${member.username}` : undefined} mono />
                   <DetailRow label="Joined" value={fmtDate(member.createdAt)} />
                 </tbody>
               </table>

@@ -865,13 +865,13 @@ function ExtrasSection({ data, session }) {
             <h3 className="font-bold text-gray-800">Admin Invitation Details</h3>
           </div>
           <p className="text-sm text-gray-500 mb-4">
-            Use your referral code or direct link to register members under the Cassmo Homes network.
+            Use your invite link to register members under the Cassmo Homes network.
           </p>
           <div className="space-y-4">
             <div>
-              <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Referral Code</span>
+              <span className="block text-xs font-semibold text-gray-400 uppercase mb-1">Invite Username</span>
               <span className="font-mono font-bold text-lg text-gray-800 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded select-all">
-                {session.user.referralCode}
+                @{session.user.username}
               </span>
             </div>
             <div>
@@ -880,7 +880,7 @@ function ExtrasSection({ data, session }) {
                 <input
                   type="text"
                   readOnly
-                  value={`${window.location.origin}/signup?ref=${session.user.referralCode}`}
+                  value={`${window.location.origin}/${session.user.username}`}
                   className="flex-1 bg-gray-50 border border-gray-200 px-3 py-2 text-xs font-mono rounded text-gray-600 focus:outline-none"
                 />
                 <button
