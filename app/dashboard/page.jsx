@@ -28,9 +28,9 @@ export default function DashboardPage() {
   }
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app";
-  // Use referral code as path-based invite link e.g. /20367
-  const refCode = session.user.referralCode;
-  const referralLink = `${origin}/${refCode}`;
+  // Use username as path-based invite link e.g. /elpareto
+  const username = session.user.username;
+  const referralLink = `${origin}/${username}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -42,7 +42,7 @@ export default function DashboardPage() {
     if (navigator.share) {
       navigator.share({
         title: "Join Cassmo Homes",
-        text: `I'd like to invite you to join Cassmo Homes real estate network. Use my referral link to sign up! (Code: ${refCode})`,
+        text: `I'd like to invite you to join Cassmo Homes real estate network. Use my referral link to sign up!`,
         url: referralLink,
       });
     } else {

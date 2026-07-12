@@ -199,17 +199,17 @@ function SignupForm() {
                 <p className="text-[10px] text-gray-500 mt-1">Lowercase letters, numbers and underscores only</p>
               </div>
 
-              {/* Referral Code */}
+              {/* Referral Username */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
-                  Referral Code <span className="text-red-500">*</span>
+                  Referral Username <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={form.refCode}
                   onChange={(e) => setForm({ ...form, refCode: e.target.value })}
-                  placeholder="e.g. 20367"
+                  placeholder="e.g. admin"
                   className="w-full border border-gray-300 text-gray-800 placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] focus:ring-1 focus:ring-[#0B3D24] transition-all rounded-lg bg-white/70 font-mono tracking-widest"
                 />
                 {/* Referrer banner */}
