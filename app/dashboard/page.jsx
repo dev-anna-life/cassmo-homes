@@ -10,7 +10,6 @@ import { Copy, CheckCheck, LogOut, Users, Share2 } from "lucide-react";
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [copied, setCopied] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
   useEffect(() => {
@@ -32,12 +31,6 @@ export default function DashboardPage() {
   // Use referral code as path-based invite link e.g. /20367
   const refCode = session.user.referralCode;
   const referralLink = `${origin}/${refCode}`;
-
-  const copyCode = () => {
-    navigator.clipboard.writeText(String(refCode));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  };
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -101,42 +94,18 @@ export default function DashboardPage() {
             <p className="text-[#FE8F01]/80 text-sm font-mono mt-0.5">@{session.user.username}</p>
           )}
           <p className="text-white/60 text-sm mt-1">
-            Share your referral code or link below to invite people to Cassmo Homes.
+            Share your invite link below to invite people to Cassmo Homes.
           </p>
         </div>
 
-        {/* Referral Code Card */}
+        {/* Referral Invite Card */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-5 h-5 text-[#0B3D24]" />
-            <h2 className="font-bold text-gray-800 text-lg">Your Referral Code</h2>
+            <h2 className="font-bold text-gray-800 text-lg">Your Invite Link</h2>
           </div>
 
-          {/* Big Code Display */}
-          <div className="bg-gray-50 border-2 border-dashed border-[#0B3D24]/30 rounded-lg p-6 text-center mb-4">
-            <div className="font-mono text-xl sm:text-3xl font-bold text-[#0B3D24] tracking-normal sm:tracking-widest break-all mb-1">
-              {refCode}
-            </div>
-            <p className="text-xs text-gray-400 mb-4">This is your personal referral code</p>
-            <button
-              onClick={copyCode}
-              className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded font-semibold text-sm transition-all w-full sm:w-auto ${
-                copied
-                  ? "bg-green-500 text-white"
-                  : "bg-[#0B3D24] text-white hover:bg-[#072c1a]"
-              }`}
-            >
-              {copied ? (
-                <><CheckCheck className="w-4 h-4" /> Copied!</>
-              ) : (
-                <><Copy className="w-4 h-4" /> Copy Code</>
-              )}
-            </button>
-          </div>
-
-          {/* Full Invite Link */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Your Full Invite Link</p>
             <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-2.5 mb-3 select-all break-all overflow-hidden">
               <span className="flex-1 text-xs text-gray-600 font-mono break-all truncate">
                 {referralLink}
@@ -167,22 +136,30 @@ export default function DashboardPage() {
         {/* Info Card */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="font-bold text-gray-800 mb-3">How to Invite Someone</h3>
-          <ol className="space-y-2 text-sm text-gray-600">
+          <ol className="space-y-3 text-sm text-gray-600">
             <li className="flex gap-3">
               <span className="w-6 h-6 bg-[#0B3D24] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
-              Copy your <strong>invite link</strong> or <strong>referral code</strong> above.
+              <span className="text-gray-600">
+                Copy your <strong>invite link</strong> above.
+              </span>
             </li>
             <li className="flex gap-3">
               <span className="w-6 h-6 bg-[#0B3D24] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
-              Send the link to your friend via WhatsApp, SMS, or any platform.
+              <span className="text-gray-600">
+                Send the link to your friend via WhatsApp, SMS, or any platform.
+              </span>
             </li>
             <li className="flex gap-3">
               <span className="w-6 h-6 bg-[#0B3D24] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
-              When they click the link and register, they will automatically be added under your account.
+              <span className="text-gray-600">
+                When they click the link and register, they will automatically be added under your account.
+              </span>
             </li>
             <li className="flex gap-3">
               <span className="w-6 h-6 bg-[#FE8F01] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
-              Your referral tree grows, and so does your commission potential!
+              <span className="text-gray-600">
+                Your referral tree grows, and so does your commission potential!
+              </span>
             </li>
           </ol>
         </div>

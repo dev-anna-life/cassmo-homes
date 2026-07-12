@@ -216,11 +216,11 @@ function SignupForm() {
                 {referrer && (
                   <div className="mt-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
                     <div className="w-8 h-8 bg-[#0B3D24] rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                      #{referrer.memberNumber ?? "A"}
+                      @
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-green-800">
-                        Referred by: {referrer.memberNumber ? `Member #${referrer.memberNumber}` : "Admin"}
+                        Referred by: @{referrer.username || "admin"}
                       </p>
                     </div>
                     <span className="ml-auto text-green-500 text-xs font-bold">✓ Valid</span>
