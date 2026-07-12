@@ -65,8 +65,8 @@ export default function AdminSidebar({ isOpen, setIsOpen, session, currentSectio
               <UserAvatarPlaceholder />
             </div>
             <div>
-              <div className="font-semibold text-white text-lg">{session?.user?.name || "Admin"}</div>
-              <div className="text-sm text-gray-400 capitalize">{session?.user?.role || "Admin"}</div>
+              <div className="font-semibold text-white text-lg">Cassmo Admin</div>
+              <div className="text-sm text-gray-400">Administrator</div>
             </div>
           </div>
 
