@@ -216,7 +216,7 @@ export default function MemberProfilePage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
               <User className="w-5 h-5 text-[#0B3D24]" />
-              <h3 className="font-bold text-gray-800">{member.username || member.name} — Personal Details</h3>
+              <h3 className="font-bold text-gray-800">{member.username || member.name} - Personal Details</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -242,7 +242,7 @@ export default function MemberProfilePage() {
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
               <CreditCard className="w-5 h-5 text-[#0B3D24]" />
               <h3 className="font-bold text-gray-800">
-                {member.username || member.name} — Bank Details
+                {member.username || member.name} - Bank Details
               </h3>
             </div>
             {member.bankName || member.accountNumber || member.accountName ? (
@@ -280,7 +280,7 @@ export default function MemberProfilePage() {
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-[#0B3D24]" />
                 <h3 className="font-bold text-gray-800">
-                  {member.username || member.name} — Downlines
+                  {member.username || member.name} - Downlines
                 </h3>
               </div>
               <span className="text-xs bg-[#0B3D24]/10 text-[#0B3D24] font-bold px-2.5 py-1 rounded-full">
@@ -289,7 +289,7 @@ export default function MemberProfilePage() {
             </div>
             {member.referredUsers?.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm text-gray-600 min-w-[500px]">
+                <table className="w-full text-sm text-gray-600 min-w-[550px]">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wide">No</th>
@@ -306,10 +306,10 @@ export default function MemberProfilePage() {
                         <td className="px-4 py-3 text-gray-400">{i + 1}</td>
                         <td className="px-4 py-3 font-medium text-gray-800">{u.name}</td>
                         <td className="px-4 py-3 font-mono text-xs text-gray-500">
-                          {u.username ? `@${u.username}` : "—"}
+                          {u.username ? `@${u.username}` : "None"}
                         </td>
                         <td className="px-4 py-3 text-xs text-gray-500">{u.email}</td>
-                        <td className="px-4 py-3 text-xs text-gray-500">{u.phone || "—"}</td>
+                        <td className="px-4 py-3 text-xs text-gray-500">{u.phone || "None"}</td>
                         <td className="px-4 py-3 text-xs text-gray-400">{fmtDate(u.createdAt)}</td>
                       </tr>
                     ))}

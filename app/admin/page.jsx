@@ -55,17 +55,6 @@ function EmptyState({ icon: Icon, message }) {
 function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) {
   const members = users.filter((u) => u.role === "user");
   const counts = dashData?.counts || {};
-  const [copied, setCopied] = useState(false);
-
-  const copyInvite = () => {
-    if (!session?.user?.username && !session?.user?.referralCode) return;
-    // Use username in the link if available — more personal and readable
-    const ref = session.user.username || session.user.referralCode;
-    const url = `${window.location.origin}/signup?ref=${ref}`;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const cards = [
     { label: "Members", value: loadingDash ? "…" : `${members.length} Member(s)`, icon: Users, color: "bg-[#0B3D24]" },
@@ -78,28 +67,9 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
   return (
     <div>
       {/* Welcome Banner */}
-      <div className="bg-[#0B3D24] text-white rounded shadow p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-xl font-bold">Welcome back, {session?.user?.name || "Admin"}! 👋</h1>
-          <p className="text-sm text-white/70 mt-1">Manage network members, sales commissions, and system configs here.</p>
-        </div>
-        <div className="flex flex-col items-start gap-1">
-          <span className="text-xs font-semibold text-white/50 uppercase tracking-wider">Default Registration Link</span>
-          <div className="mt-2 text-xs font-mono text-gray-600 bg-gray-50 border border-gray-200 rounded px-3 py-2 select-all break-all max-w-xl">
-            {`${typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app"}/signup?ref=${session.user.username || session.user.referralCode}`}
-          </div>
-          <div className="mt-1 text-xs text-gray-400">
-            Your username: <span className="font-bold text-gray-700 font-mono">@{session.user.username}</span>
-          </div>
-        </div>
-        <button
-          onClick={copyInvite}
-          className={`sm:self-center px-5 py-2.5 rounded font-semibold text-xs transition-colors self-start whitespace-nowrap ${
-            copied ? "bg-green-600 text-white" : "bg-[#0B3D24] hover:bg-[#072c1a] text-white"
-          }`}
-        >
-          {copied ? "✓ Copied Link" : "Copy Invite Link"}
-        </button>
+      <div className="bg-[#0B3D24] text-white rounded shadow p-6 mb-6">
+        <h1 className="text-xl font-bold">Welcome back, {session?.user?.name || "Admin"}! 👋</h1>
+        <p className="text-sm text-white/70 mt-1">Manage network members, sales commissions, and system configs here.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">

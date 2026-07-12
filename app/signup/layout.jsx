@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Join Cassmo Homes — Registration",
+  title: "Join Cassmo Homes - Registration",
 };
 
 export default function SignupLayout({ children }) {

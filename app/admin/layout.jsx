@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import AdminLayoutWrapper from "@/components/AdminLayoutWrapper";
 
 export const metadata = {
-  title: "Admin Dashboard — Cassmo Homes",
+  title: "Admin Dashboard - Cassmo Homes",
 };
 
 export default async function AdminLayout({ children }) {
