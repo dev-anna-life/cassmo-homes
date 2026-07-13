@@ -28,7 +28,6 @@ export default function DashboardPage() {
   }
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://cassmo-homes.vercel.app";
-  // Use username as path-based invite link e.g. /elpareto
   const username = session.user.username;
   const referralLink = `${origin}/${username}`;
 
@@ -52,7 +51,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#e9ecef" }}>
-      {/* Top Header */}
       <div className="bg-[#0B3D24] text-white flex items-center justify-between px-5 py-3 shadow">
         <div className="flex items-center gap-3">
           <Link href="/">
@@ -84,11 +82,10 @@ export default function DashboardPage() {
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-10 space-y-6">
 
-        {/* Welcome Banner */}
         <div className="bg-[#0B3D24] text-white rounded-lg p-6 shadow">
           <p className="text-[#FE8F01] text-xs font-semibold uppercase tracking-wider mb-1">Member Dashboard</p>
           <h1 className="text-2xl font-bold">
-            Welcome, {session.user.name.split(" ")[0]}! 👋
+            Welcome, {session.user.name.split(" ")[0]}
           </h1>
           {session.user.username && (
             <p className="text-[#FE8F01]/80 text-sm font-mono mt-0.5">@{session.user.username}</p>
@@ -98,7 +95,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Referral Invite Card */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-5 h-5 text-[#0B3D24]" />
@@ -133,7 +129,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Info Card */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="font-bold text-gray-800 mb-3">How to Invite Someone</h3>
           <ol className="space-y-3 text-sm text-gray-600">
@@ -164,7 +159,6 @@ export default function DashboardPage() {
           </ol>
         </div>
 
-        {/* Status badge */}
         <div className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-500 uppercase tracking-wider">Account Status</p>

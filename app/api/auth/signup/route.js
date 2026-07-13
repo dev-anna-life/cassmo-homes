@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
 function generateCode() {
-  // 5-digit numeric referral code e.g. 20367
   return String(Math.floor(10000 + Math.random() * 90000));
 }
 
@@ -22,7 +21,6 @@ export async function POST(request) {
       accountName,
     } = await request.json();
 
-    // Validate required fields
     if (!name || !username || !email || !password) {
       return NextResponse.json(
         { error: "Full name, username, email and password are required." },
@@ -30,7 +28,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate phone is provided
     if (!phone || !phone.trim()) {
       return NextResponse.json(
         { error: "Phone number is required." },
@@ -38,7 +35,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate address is provided
     if (!address || !address.trim()) {
       return NextResponse.json(
         { error: "Address is required." },
@@ -46,7 +42,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate bank details are provided
     if (!bankName || !accountNumber || !accountName) {
       return NextResponse.json(
         { error: "Bank name, account number and account name are required." },
@@ -54,7 +49,6 @@ export async function POST(request) {
       );
     }
 
-    // Validate account number is exactly 10 digits
     if (!/^\d{10}$/.test(accountNumber)) {
       return NextResponse.json(
         { error: "Account number must be exactly 10 digits." },
@@ -62,7 +56,6 @@ export async function POST(request) {
       );
     }
 
-    // Must have a valid referral code or username
     if (!refCode) {
       return NextResponse.json(
         { error: "A valid referral link is required to sign up." },
@@ -70,7 +63,6 @@ export async function POST(request) {
       );
     }
 
-    // Find the referrer by username, referral code, or member number
     const memberNum = parseInt(refCode, 10);
     const referrer = await prisma.user.findFirst({
       where: {
@@ -89,7 +81,6 @@ export async function POST(request) {
       );
     }
 
-    // Check if email already exists
     const existing = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
     });
@@ -101,7 +92,6 @@ export async function POST(request) {
       );
     }
 
-    // Check if username already taken
     const usernameClean = username.trim().toLowerCase().replace(/\s+/g, "_");
     const existingUsername = await prisma.user.findUnique({
       where: { username: usernameClean },
@@ -114,16 +104,13 @@ export async function POST(request) {
       );
     }
 
-    // Hash password and generate unique referral code for the new user
     const hashedPassword = await bcrypt.hash(password, 12);
     let newRefCode = generateCode();
 
-    // Ensure uniqueness
     while (await prisma.user.findUnique({ where: { referralCode: newRefCode } })) {
       newRefCode = generateCode();
     }
 
-    // Assign the next sequential member number
     const maxMember = await prisma.user.findFirst({
       where: { memberNumber: { not: null } },
       orderBy: { memberNumber: "desc" },

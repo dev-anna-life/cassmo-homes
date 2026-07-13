@@ -10,14 +10,13 @@ export async function GET() {
   }
 
   try {
-    // 1. Fetch counts
     const membersCount = await prisma.user.count({ where: { role: "user" } });
-    
+
     const pendingWithdrawal = await prisma.withdrawalRequest.aggregate({
       where: { status: "pending" },
       _sum: { amount: true },
     });
-    
+
     const totalWithdrawn = await prisma.withdrawalRequest.aggregate({
       where: { status: "completed" },
       _sum: { amount: true },
@@ -33,9 +32,8 @@ export async function GET() {
       _sum: { price: true },
     });
 
-    // 2. Fetch lists for each section
     const properties = await prisma.property.findMany({ orderBy: { createdAt: "desc" } });
-    
+
     const sales = await prisma.sale.findMany({
       orderBy: { createdAt: "desc" },
       include: {

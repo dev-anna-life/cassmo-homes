@@ -56,7 +56,6 @@ export async function POST(req) {
     const price = customPrice ? parseFloat(customPrice) : property.price;
     const commissionEarned = price * (property.commissionRate / 100);
 
-    // Create the Sale and increment the agent's walletBalance transactionally
     const result = await prisma.$transaction([
       prisma.sale.create({
         data: {

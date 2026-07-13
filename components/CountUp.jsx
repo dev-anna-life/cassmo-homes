@@ -2,20 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/**
- * Animates a numeric value from 0 to target when it enters the viewport.
- * Parses values like "6+", "100%", "24/7", "FCT" automatically.
- */
 export default function CountUp({ value }) {
   const ref = useRef(null);
   const started = useRef(false);
   const [display, setDisplay] = useState("0");
 
   useEffect(() => {
-    // Parse leading number + trailing suffix, e.g. "6+" -> [6, "+"]
     const match = String(value).match(/^(\d+(?:\.\d+)?)(.*)$/);
     if (!match) {
-      // Non-numeric (FCT, 24/7) — just show as-is immediately
       setDisplay(value);
       return;
     }
@@ -38,7 +32,6 @@ export default function CountUp({ value }) {
         const tick = (now) => {
           const elapsed = now - startTime;
           const t = Math.min(elapsed / duration, 1);
-          // easeOutExpo
           const eased = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
           const current = Math.round(eased * target);
           setDisplay(`${current}${suffix}`);

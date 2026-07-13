@@ -71,7 +71,6 @@ function LoginForm() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Top Left Logo Mark */}
       <div className="absolute top-6 left-6 z-10 hidden sm:block">
         <Link href="/" className="font-serif italic text-2xl tracking-wide text-[#FE8F01] drop-shadow-md">
           Cassmo Homes
@@ -79,7 +78,6 @@ function LoginForm() {
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Success Modal */}
         {success && (
           <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl p-10 text-center border border-white/30">
             <div className="flex items-center justify-center mb-6">
@@ -110,10 +108,8 @@ function LoginForm() {
           </div>
         )}
 
-        {/* Login Form Container */}
         {!success && (
           <div className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/40">
-            {/* Logo */}
             <div className="mb-6 text-center">
               <Link href="/">
                 <Image
@@ -164,7 +160,6 @@ function LoginForm() {
                 />
               </div>
 
-              {/* Math CAPTCHA */}
               <MathCaptcha onVerified={handleCaptcha} />
 
               <button

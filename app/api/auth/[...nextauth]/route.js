@@ -16,7 +16,6 @@ export const authOptions = {
 
         const identifier = credentials.email.trim().toLowerCase();
 
-        // Accept email OR @username (with or without the @ prefix)
         const cleanUsername = identifier.startsWith("@")
           ? identifier.slice(1)
           : identifier;

@@ -30,7 +30,7 @@ async function main() {
       phone: "+2349025737611",
       referralCode,
       role: "admin",
-      memberNumber: null, // admin has no member number
+      memberNumber: null,
     },
   });
 

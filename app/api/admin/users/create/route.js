@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 function generateCode() {
-  // 5-digit numeric referral code e.g. 20367
   return String(Math.floor(10000 + Math.random() * 90000));
 }
 
@@ -22,12 +21,10 @@ export async function POST(req) {
       return NextResponse.json({ error: "Name, email and password are required" }, { status: 400 });
     }
 
-    // Auto-generate username from name if not provided
     let usernameToUse = username?.trim()
       ? username.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_")
       : name.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
 
-    // Ensure username uniqueness by appending numbers if needed
     let finalUsername = usernameToUse;
     let counter = 1;
     while (await prisma.user.findUnique({ where: { username: finalUsername } })) {
@@ -42,7 +39,6 @@ export async function POST(req) {
 
     const hashed = await bcrypt.hash(password, 12);
     let referralCode;
-    // ensure uniqueness
     do {
       referralCode = generateCode();
     } while (await prisma.user.findUnique({ where: { referralCode } }));

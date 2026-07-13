@@ -128,7 +128,6 @@ function SignupForm() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Top Left Logo Mark */}
       <div className="absolute top-6 left-6 z-10 hidden sm:block">
         <Link href="/" className="font-serif italic text-2xl tracking-wide text-[#FE8F01] drop-shadow-md">
           Cassmo Homes
@@ -136,7 +135,6 @@ function SignupForm() {
       </div>
 
       <div className="w-full max-w-lg relative z-10 my-6">
-        {/* Success State */}
         {success ? (
           <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl p-10 text-center border border-white/30">
             <div className="flex items-center justify-center mb-6">
@@ -154,9 +152,7 @@ function SignupForm() {
             </Link>
           </div>
         ) : (
-          /* Registration Form */
           <div className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/40">
-            {/* Logo */}
             <div className="mb-6 text-center">
               <Link href="/">
                 <Image
@@ -178,7 +174,6 @@ function SignupForm() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Username */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                   Username <span className="text-red-500">*</span>
@@ -199,7 +194,6 @@ function SignupForm() {
                 <p className="text-[10px] text-gray-500 mt-1">Lowercase letters, numbers and underscores only</p>
               </div>
 
-              {/* Referral Username */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                   Referral Username <span className="text-red-500">*</span>
@@ -212,7 +206,6 @@ function SignupForm() {
                   placeholder="e.g. admin"
                   className="w-full border border-gray-300 text-gray-800 placeholder-gray-500 px-4 py-3 text-sm focus:outline-none focus:border-[#0B3D24] focus:ring-1 focus:ring-[#0B3D24] transition-all rounded-lg bg-white/70 font-mono tracking-widest"
                 />
-                {/* Referrer banner */}
                 {referrer && (
                   <div className="mt-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
                     <div className="w-8 h-8 bg-[#0B3D24] rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -229,7 +222,6 @@ function SignupForm() {
                 {refError && <p className="text-xs text-red-500 mt-1 font-semibold">{refError}</p>}
               </div>
 
-              {/* Full Name */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                   Full Name <span className="text-red-500">*</span>
@@ -244,7 +236,6 @@ function SignupForm() {
                 />
               </div>
 
-              {/* Email */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                   Email Address <span className="text-red-500">*</span>
@@ -259,7 +250,6 @@ function SignupForm() {
                 />
               </div>
 
-              {/* Phone */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                   Phone Number <span className="text-red-500">*</span>
@@ -274,7 +264,6 @@ function SignupForm() {
                 />
               </div>
 
-              {/* Address */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                   Address <span className="text-red-500">*</span>
@@ -289,7 +278,6 @@ function SignupForm() {
                 />
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                   Password <span className="text-red-500">*</span>
@@ -305,7 +293,6 @@ function SignupForm() {
                 />
               </div>
 
-              {/* Banking details section */}
               <div className="pt-4 border-t border-gray-200/50 space-y-4">
                 <div className="flex items-center gap-2">
                   <CreditCard className="w-4 h-4 text-[#0B3D24]" />
@@ -317,7 +304,6 @@ function SignupForm() {
                   Required for commission payments. These details will be used to pay you directly.
                 </p>
 
-                {/* Bank Name */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                     Bank Name <span className="text-red-500">*</span>
@@ -332,7 +318,6 @@ function SignupForm() {
                   />
                 </div>
 
-                {/* Account Number */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                     Account Number <span className="text-red-500">*</span>
@@ -358,7 +343,6 @@ function SignupForm() {
                   )}
                 </div>
 
-                {/* Account Name */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
                     Account Name <span className="text-red-500">*</span>
@@ -374,7 +358,6 @@ function SignupForm() {
                 </div>
               </div>
 
-              {/* Math CAPTCHA */}
               <MathCaptcha onVerified={handleCaptcha} />
 
               <button

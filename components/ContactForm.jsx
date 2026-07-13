@@ -27,7 +27,6 @@ export default function ContactForm() {
     if (!form.name || !form.email || !form.message) return;
     setStatus("loading");
 
-    // 1. Send email via API
     try {
       await fetch("/api/contact", {
         method: "POST",
@@ -35,10 +34,8 @@ export default function ContactForm() {
         body: JSON.stringify(form),
       });
     } catch {
-      // Email is best-effort; WhatsApp will still open
     }
 
-    // 2. Open WhatsApp with form details
     const body = [
       `*Name:* ${form.name}`,
       `*Email:* ${form.email}`,

@@ -59,7 +59,6 @@ export default function AdminSidebar({ isOpen, setIsOpen, session, currentSectio
         `}
       >
         <div className="w-[280px]">
-          {/* User Profile Area */}
           <div className="p-6 bg-[#2d3436]/50 border-b border-gray-700/50 flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center overflow-hidden border-2 border-gray-600">
               <UserAvatarPlaceholder />
@@ -70,7 +69,6 @@ export default function AdminSidebar({ isOpen, setIsOpen, session, currentSectio
             </div>
           </div>
 
-          {/* Navigation */}
           <nav className="py-4">
             <ul className="flex flex-col gap-1">
               {navItems.map((item) => (
@@ -143,7 +141,6 @@ export default function AdminSidebar({ isOpen, setIsOpen, session, currentSectio
                 </li>
               ))}
 
-              {/* Logout */}
               <li>
                 <button
                   onClick={() => signOut({ callbackUrl: "/login" })}

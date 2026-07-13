@@ -10,7 +10,6 @@ import PageTransition from "@/components/PageTransition";
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
-  // Paths where we don't want the default public website Navbar, Footer, WhatsApp button, or Scroll Progress
   const isAuthOrDashboard =
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||

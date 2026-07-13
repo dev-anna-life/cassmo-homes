@@ -42,7 +42,6 @@ export default function ForgotPasswordPage() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Top Left Logo Mark */}
       <div className="absolute top-6 left-6 z-10 hidden sm:block">
         <Link href="/" className="font-serif italic text-2xl tracking-wide text-[#FE8F01] drop-shadow-md">
           Cassmo Homes
@@ -51,7 +50,6 @@ export default function ForgotPasswordPage() {
 
       <div className="w-full max-w-md relative z-10">
         {sent ? (
-          /* Success state */
           <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-10 text-center border border-white/20">
             <div className="flex items-center justify-center mb-6">
               <div className="w-20 h-20 rounded-full border-4 border-green-200 flex items-center justify-center bg-green-50">
@@ -74,7 +72,6 @@ export default function ForgotPasswordPage() {
             </Link>
           </div>
         ) : (
-          /* Form state */
           <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/30">
             <div className="mb-6 text-center">
               <Link href="/">

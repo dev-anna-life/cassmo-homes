@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 
-// GET: fetch properties
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "admin") {
@@ -20,7 +19,6 @@ export async function GET() {
   }
 }
 
-// POST: create property
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "admin") {
@@ -50,7 +48,6 @@ export async function POST(req) {
   }
 }
 
-// DELETE: delete property
 export async function DELETE(req) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "admin") {

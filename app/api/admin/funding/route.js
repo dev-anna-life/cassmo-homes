@@ -49,7 +49,6 @@ export async function POST(req) {
     }
 
     if (status === "approved") {
-      // Transactional: Approve request and increment user walletBalance
       await prisma.$transaction([
         prisma.fundingRequest.update({
           where: { id: requestId },
@@ -65,7 +64,6 @@ export async function POST(req) {
         }),
       ]);
     } else {
-      // Just mark rejected
       await prisma.fundingRequest.update({
         where: { id: requestId },
         data: { status: "rejected" },

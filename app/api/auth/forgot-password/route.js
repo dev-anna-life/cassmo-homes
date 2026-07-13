@@ -13,31 +13,25 @@ export async function POST(request) {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Find user — silently ignore if admin or not found (security: don't reveal existence)
     const user = await prisma.user.findUnique({
       where: { email: cleanEmail },
     });
 
-    // If user doesn't exist OR is admin, return generic success (don't reveal info)
     if (!user || user.role === "admin") {
       return NextResponse.json({ success: true });
     }
 
-    // Generate a secure reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
 
-    // Save token to database
     await prisma.user.update({
       where: { id: user.id },
       data: { resetToken, resetTokenExpiry },
     });
 
-    // Build reset URL
     const baseUrl = process.env.NEXTAUTH_URL || "https://cassmo-homes.vercel.app";
     const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
-    // Send email
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {

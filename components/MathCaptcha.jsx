@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { ShieldCheck } from "lucide-react";
 
-const CHARS = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no o, O, 0, i, I, l, 1 (confusing)
+const CHARS = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const LENGTH = 6;
 
 function generateCode() {
@@ -18,11 +18,9 @@ function drawCaptcha(canvas, code) {
   const W = canvas.width;
   const H = canvas.height;
 
-  // Background
   ctx.fillStyle = "#f0f4f8";
   ctx.fillRect(0, 0, W, H);
 
-  // Background noise dots
   for (let i = 0; i < 80; i++) {
     ctx.beginPath();
     ctx.arc(
@@ -36,7 +34,6 @@ function drawCaptcha(canvas, code) {
     ctx.fill();
   }
 
-  // Noise lines (behind text)
   for (let i = 0; i < 6; i++) {
     ctx.beginPath();
     ctx.moveTo(Math.random() * W, Math.random() * H);
@@ -50,7 +47,6 @@ function drawCaptcha(canvas, code) {
     ctx.stroke();
   }
 
-  // Draw each character with individual distortion
   const charW = W / (LENGTH + 1);
   const colors = [
     "#0B3D24", "#1a5c38", "#7c3aed", "#b45309",
@@ -64,20 +60,16 @@ function drawCaptcha(canvas, code) {
     const y = H / 2 + 6;
 
     ctx.translate(x, y);
-    // Random slight rotation per character
     ctx.rotate((Math.random() - 0.5) * 0.45);
-    // Random slight scale
     const scale = 0.85 + Math.random() * 0.3;
     ctx.scale(scale, scale);
 
-    // Random font size variation
     const fontSize = 22 + Math.floor(Math.random() * 6);
     const fonts = ["Arial Black", "Georgia", "Verdana", "Trebuchet MS", "Impact"];
     ctx.font = `bold ${fontSize}px "${fonts[i % fonts.length]}"`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    // Slight shadow for depth
     ctx.shadowColor = "rgba(0,0,0,0.15)";
     ctx.shadowBlur = 2;
     ctx.shadowOffsetX = 1;
@@ -88,7 +80,6 @@ function drawCaptcha(canvas, code) {
     ctx.restore();
   }
 
-  // Overlay noise lines (on top of text)
   for (let i = 0; i < 3; i++) {
     ctx.beginPath();
     ctx.moveTo(0, Math.random() * H);
@@ -101,7 +92,6 @@ function drawCaptcha(canvas, code) {
 
 export default function VisualCaptcha({ onVerified }) {
   const canvasRef = useRef(null);
-  // Lazy initializer — generates a fresh code immediately on every mount/page load
   const [code, setCode] = useState(() => generateCode());
   const [input, setInput] = useState("");
   const [verified, setVerified] = useState(false);
@@ -116,7 +106,6 @@ export default function VisualCaptcha({ onVerified }) {
     onVerified(false);
   }, [onVerified]);
 
-  // Draw onto canvas whenever code changes
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas && code) drawCaptcha(canvas, code);
@@ -135,7 +124,6 @@ export default function VisualCaptcha({ onVerified }) {
       } else {
         setError(true);
         onVerified(false);
-        // Auto-refresh after showing error briefly
         setTimeout(() => {
           refresh();
         }, 800);
@@ -145,7 +133,6 @@ export default function VisualCaptcha({ onVerified }) {
 
   return (
     <div className="rounded border border-gray-200 bg-gray-50 px-4 py-3 space-y-2">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-gray-600 uppercase tracking-wide flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-[#0B3D24]" />
@@ -153,7 +140,6 @@ export default function VisualCaptcha({ onVerified }) {
         </span>
       </div>
 
-      {/* Canvas */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div className="flex justify-center flex-shrink-0">
           <canvas
@@ -190,7 +176,6 @@ export default function VisualCaptcha({ onVerified }) {
               }`}
           />
 
-          {/* Status */}
           <p className={`text-xs mt-1 text-center font-semibold transition-all ${
             verified ? "text-green-600" : error ? "text-red-500" : "text-gray-400"
           }`}>

@@ -44,7 +44,7 @@ function AdminLoginForm() {
         setError("Access denied. Admin accounts only.");
         return;
       }
-      
+
       const callbackUrl = searchParams.get("callbackUrl") || "/admin";
       router.push(callbackUrl);
       router.refresh();
@@ -61,7 +61,6 @@ function AdminLoginForm() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Top Left Logo Mark */}
       <div className="absolute top-6 left-6 z-10 hidden sm:block">
         <Link href="/" className="font-serif italic text-2xl tracking-wide text-[#FE8F01] drop-shadow-md">
           Cassmo Homes
@@ -70,8 +69,7 @@ function AdminLoginForm() {
 
       <div className="w-full max-w-md relative z-10">
         <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/30">
-          
-          {/* Logo */}
+
           <div className="mb-6 text-center">
             <Link href="/">
               <Image
@@ -127,7 +125,6 @@ function AdminLoginForm() {
               />
             </div>
 
-            {/* CAPTCHA */}
             <MathCaptcha onVerified={handleCaptcha} />
 
             <button

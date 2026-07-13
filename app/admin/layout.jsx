@@ -19,7 +19,6 @@ export default async function AdminLayout({ children }) {
   }
 
   return (
-    // This replaces the body content completely — no site Navbar/Footer shown
     <div className="admin-root" style={{ position: "fixed", inset: 0, zIndex: 9999, overflowY: "auto" }}>
       <AdminLayoutWrapper session={session}>
         {children}

@@ -12,7 +12,6 @@ import {
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminHeader from "@/components/AdminHeader";
 
-/* ─────────────────────────────────── helpers ─────────────────────────────── */
 const fmt = (n) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n || 0);
 const fmtDate = (d) =>
@@ -51,7 +50,6 @@ function EmptyState({ icon: Icon, message }) {
   );
 }
 
-/* ══════════════════════════════════ SECTION: DASHBOARD ═══════════════════ */
 function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) {
   const members = users.filter((u) => u.role === "user");
   const counts = dashData?.counts || {};
@@ -66,9 +64,9 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
 
   return (
     <div>
-      {/* Welcome Banner */}
+      
       <div className="bg-[#0B3D24] text-white rounded shadow p-6 mb-6">
-        <h1 className="text-xl font-bold">Admin Dashboard 👋</h1>
+        <h1 className="text-xl font-bold">Admin Dashboard </h1>
         <p className="text-sm text-white/70 mt-1">Manage network members, sales commissions, and system configs here.</p>
       </div>
 
@@ -86,7 +84,6 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
         ))}
       </div>
 
-      {/* Recent Members Table */}
       <div className="bg-white rounded shadow">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="font-bold text-gray-800">Members</h3>
@@ -134,7 +131,6 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
   );
 }
 
-/* ══════════════════════════════════ SECTION: MEMBERS ═════════════════════ */
 function MembersSection({ users, loading, action, onRefresh }) {
   const [selectedUser, setSelectedUser] = useState("");
   const [newRole, setNewRole] = useState("user");
@@ -149,7 +145,6 @@ function MembersSection({ users, loading, action, onRefresh }) {
 
   const toggleExpand = (id) =>
     setExpandedUsers((prev) => ({ ...prev, [id]: !prev[id] }));
-
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -258,7 +253,6 @@ function MembersSection({ users, loading, action, onRefresh }) {
     );
   }
 
-  // Default — view all members
   return (
     <div>
       <SectionHeader title="All Members" subtitle={`${members.length} member(s) in the network.`} />
@@ -344,7 +338,6 @@ function MembersSection({ users, loading, action, onRefresh }) {
   );
 }
 
-/* ══════════════════════════════════ SECTION: FUNDING ════════════════════ */
 function FundingSection({ data, onRefresh }) {
   const [processing, setProcessing] = useState(null);
 
@@ -415,7 +408,6 @@ function FundingSection({ data, onRefresh }) {
   );
 }
 
-/* ══════════════════════════════════ SECTION: COMMISSIONS ═════════════════ */
 function CommissionsSection({ data }) {
   const sales = data?.sales || [];
   const total = sales.reduce((sum, s) => sum + s.commissionEarned, 0);
@@ -457,7 +449,6 @@ function CommissionsSection({ data }) {
   );
 }
 
-/* ══════════════════════════════════ SECTION: BANK DETAILS ═══════════════ */
 function BankDetailsSection({ data }) {
   const bankDetails = data?.bankDetails || [];
 
@@ -494,7 +485,6 @@ function BankDetailsSection({ data }) {
   );
 }
 
-/* ══════════════════════════════════ SECTION: PROPERTY SALES ═════════════ */
 function PropertySalesSection({ data, onRefresh }) {
   const [form, setForm] = useState({ buyerName: "", propertyId: "", agentId: "", customPrice: "" });
   const [saving, setSaving] = useState(false);
@@ -503,7 +493,7 @@ function PropertySalesSection({ data, onRefresh }) {
 
   const sales = data?.sales || [];
   const properties = data?.properties || [];
-  // Get all non-admin users for agent selection
+  
   const agents = (data?.bankDetails || []);
 
   const handleSubmit = async (e) => {
@@ -527,7 +517,7 @@ function PropertySalesSection({ data, onRefresh }) {
 
   return (
     <div className="space-y-8">
-      {/* Record New Sale Form */}
+      
       <div>
         <SectionHeader title="Property Sales" subtitle="Record a new property sale and automatically credit agent commission." />
         <div className="bg-white rounded shadow p-6 max-w-lg">
@@ -567,7 +557,6 @@ function PropertySalesSection({ data, onRefresh }) {
         </div>
       </div>
 
-      {/* Sales History */}
       <div>
         <h3 className="font-bold text-gray-800 mb-4 text-lg">Sales History</h3>
         <div className="bg-white rounded shadow overflow-x-auto">
@@ -605,7 +594,6 @@ function PropertySalesSection({ data, onRefresh }) {
   );
 }
 
-/* ══════════════════════════════════ SECTION: WITHDRAWAL ══════════════════ */
 function WithdrawalSection({ data, onRefresh }) {
   const [processing, setProcessing] = useState(null);
 
@@ -678,7 +666,6 @@ function WithdrawalSection({ data, onRefresh }) {
   );
 }
 
-/* ══════════════════════════════════ SECTION: PROPERTIES ═════════════════ */
 function PropertiesSection({ data, onRefresh }) {
   const [form, setForm] = useState({ title: "", location: "", price: "", commissionRate: "10", description: "" });
   const [saving, setSaving] = useState(false);
@@ -802,7 +789,6 @@ function PropertiesSection({ data, onRefresh }) {
   );
 }
 
-/* ══════════════════════════════════ SECTION: EXTRAS ══════════════════════ */
 function ExtrasSection({ data, session }) {
   const [copied, setCopied] = useState(false);
 
@@ -900,7 +886,6 @@ function ExtrasSection({ data, session }) {
   );
 }
 
-/* ══════════════════════════════════ ROOT PAGE ════════════════════════════ */
 function AdminDashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();

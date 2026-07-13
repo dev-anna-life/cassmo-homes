@@ -65,7 +65,6 @@ function ResetPasswordForm() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Top Left Logo Mark */}
       <div className="absolute top-6 left-6 z-10 hidden sm:block">
         <Link href="/" className="font-serif italic text-2xl tracking-wide text-[#FE8F01] drop-shadow-md">
           Cassmo Homes

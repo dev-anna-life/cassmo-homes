@@ -10,17 +10,14 @@ export async function POST(req) {
   }
 
   try {
-    // Delete all properties (first image / request to remove them)
+    
     const properties = await prisma.property.deleteMany({});
 
-    // Delete all sales
     const sales = await prisma.sale.deleteMany({});
 
-    // Delete all fake seed request data
     const withdrawals = await prisma.withdrawalRequest.deleteMany({});
     const funding = await prisma.fundingRequest.deleteMany({});
 
-    // Delete the fake test member created by seed
     const fakeUser = await prisma.user.findUnique({
       where: { email: "member@cassmohomes.com" },
     });
@@ -30,7 +27,6 @@ export async function POST(req) {
       deletedUser = true;
     }
 
-    // Reset all user wallet balances to 0
     await prisma.user.updateMany({
       data: { walletBalance: 0, totalWithdrawn: 0 },
     });

@@ -10,14 +10,11 @@ import { services, offerings, whyPoints, stats } from "@/components/data";
 export default function Home() {
   return (
     <>
-      {/* ──────────── HERO ──────────── */}
       <section className="relative overflow-hidden bg-forest text-cream">
-        {/* Floating orbs */}
         <div className="orb orb-a h-72 w-72 bg-accent/20 top-10 -left-16" />
         <div className="orb orb-b h-96 w-96 bg-brand-green/15 bottom-0 left-1/3" />
         <div className="orb orb-c h-64 w-64 bg-accent/10 top-1/2 right-10" />
 
-        {/* Logo watermark */}
         <div className="pointer-events-none absolute -right-24 top-1/2 h-[520px] w-[520px] -translate-y-1/2 opacity-[0.06] animate-float">
           <MarkWhite size={520} className="h-full w-full object-contain" />
         </div>
@@ -70,7 +67,6 @@ export default function Home() {
           </Reveal>
         </div>
 
-        {/* ── Stats bar ── */}
         <div className="border-t border-cream/10 relative z-10">
           <div className="container-c grid grid-cols-2 md:grid-cols-4">
             {stats.map((s, idx) => (
@@ -94,7 +90,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ──────────── POSITIONING ──────────── */}
       <section className="section">
         <div className="container-c grid gap-12 md:grid-cols-[0.85fr_1.15fr] md:items-center">
           <Reveal type="left" duration={0.8}>
@@ -137,7 +132,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ──────────── WHAT WE OFFER ──────────── */}
       <section className="bg-white section">
         <div className="container-c">
           <Reveal className="max-w-2xl" type="up" duration={0.8}>
@@ -190,7 +184,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ──────────── SERVICES ──────────── */}
       <section className="section">
         <div className="container-c">
           <Reveal className="max-w-2xl" type="up" duration={0.8}>
@@ -237,9 +230,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ──────────── WHY INVEST ──────────── */}
       <section className="bg-forest text-cream section relative overflow-hidden">
-        {/* Subtle orbs behind content */}
         <div className="orb orb-b h-80 w-80 bg-brand-green/10 top-0 right-0" />
         <div className="orb orb-a h-60 w-60 bg-accent/10 bottom-0 left-10" />
 
@@ -282,7 +273,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ──────────── QUOTE ──────────── */}
       <section className="section">
         <div className="container-c max-w-4xl text-center">
           <Reveal type="up" duration={0.9}>
@@ -297,7 +287,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ──────────── CTA ──────────── */}
       <section className="pb-20 md:pb-28">
         <div className="container-c">
             <div className="relative grid overflow-hidden bg-brand-green md:grid-cols-2">

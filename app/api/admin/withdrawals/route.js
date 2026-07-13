@@ -49,7 +49,6 @@ export async function POST(req) {
     }
 
     if (status === "completed") {
-      // Transactional: complete withdrawal, add to user's totalWithdrawn
       await prisma.$transaction([
         prisma.withdrawalRequest.update({
           where: { id: requestId },
@@ -65,7 +64,6 @@ export async function POST(req) {
         }),
       ]);
     } else if (status === "cancelled") {
-      // Refund user's walletBalance on cancellation/rejection
       await prisma.$transaction([
         prisma.withdrawalRequest.update({
           where: { id: requestId },

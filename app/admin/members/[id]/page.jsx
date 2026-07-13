@@ -116,7 +116,7 @@ export default function MemberProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
+      
       <div className="bg-[#0B3D24] text-white px-6 py-4 flex items-center gap-4 shadow">
         <Link
           href="/admin"
@@ -137,7 +137,7 @@ export default function MemberProfilePage() {
             )}
           </div>
         </div>
-        {/* Breadcrumb */}
+        
         <div className="ml-auto flex items-center gap-2 text-xs text-white/40">
           <Home className="w-3.5 h-3.5" />
           <span>/</span>
@@ -149,7 +149,6 @@ export default function MemberProfilePage() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
 
-        {/* Member Banner */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-[#0B3D24]/10 flex items-center justify-center flex-shrink-0 border-2 border-[#0B3D24]/20">
             <span className="text-2xl font-bold text-[#0B3D24]">
@@ -192,7 +191,6 @@ export default function MemberProfilePage() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-1 bg-white rounded-xl shadow-sm border border-gray-200 p-1.5 mb-6">
           {tabs.map((tab) => (
             <button
@@ -211,7 +209,6 @@ export default function MemberProfilePage() {
           ))}
         </div>
 
-        {/* Tab: Personal Details */}
         {activeTab === "personal" && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
@@ -236,7 +233,6 @@ export default function MemberProfilePage() {
           </div>
         )}
 
-        {/* Tab: Bank Details */}
         {activeTab === "bank" && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
@@ -273,7 +269,6 @@ export default function MemberProfilePage() {
           </div>
         )}
 
-        {/* Tab: Downlines */}
         {activeTab === "downlines" && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
