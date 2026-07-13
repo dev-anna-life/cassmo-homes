@@ -66,7 +66,7 @@ function DashboardSection({ users, dashData, loadingDash, onRefresh, session }) 
     <div>
       
       <div className="bg-[#0B3D24] text-white rounded shadow p-6 mb-6">
-        <h1 className="text-xl font-bold">Admin Dashboard </h1>
+        <h1 className="text-xl font-bold">Admin Dashboard 👋</h1>
         <p className="text-sm text-white/70 mt-1">Manage network members, sales commissions, and system configs here.</p>
       </div>
 

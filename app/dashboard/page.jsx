@@ -85,7 +85,7 @@ export default function DashboardPage() {
         <div className="bg-[#0B3D24] text-white rounded-lg p-6 shadow">
           <p className="text-[#FE8F01] text-xs font-semibold uppercase tracking-wider mb-1">Member Dashboard</p>
           <h1 className="text-2xl font-bold">
-            Welcome, {session.user.name.split(" ")[0]}
+            Welcome, {session.user.name.split(" ")[0]}! 👋
           </h1>
           {session.user.username && (
             <p className="text-[#FE8F01]/80 text-sm font-mono mt-0.5">@{session.user.username}</p>
