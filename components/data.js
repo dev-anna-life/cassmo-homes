@@ -40,7 +40,7 @@ export const offerings = [
   },
   {
     title: "Homes",
-    img: "/images/flyer-place.png",
+    img: "/images/construction-home.jpg",
     body: "Move-in ready and off-plan homes designed and built for modern living.",
     cta: "View homes",
   },
